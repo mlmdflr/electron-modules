@@ -9,8 +9,8 @@ import {
   Environment,
   PlatformPath,
 } from "../types";
-import { EOL } from "../node/internal.constants";
-import path from "../node/path";
+import { EOL, isWindows } from "../node/internal.constants";
+import { posix, win32 } from "../node/path";
 
 declare global {
   interface Window {
@@ -42,7 +42,7 @@ export const preloadInit = (defaultEnv?: { [key: string]: any }) => {
   });
 
   // node path module
-  contextBridge.exposeInMainWorld("path", path);
+  contextBridge.exposeInMainWorld("path", isWindows ? win32 : posix);
 
   // customized environment
   contextBridge.exposeInMainWorld("environment", {
