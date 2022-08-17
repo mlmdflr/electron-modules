@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<body style="background-color: #222;color: #fff;">
+  <script>
+    BigInt.prototype.toJSON = function () {return this.toString()}
+    window.ipc.once("load-route", (_, args) => {
+      window.customize = args;
+      document.body.innerHTML += `<div style="-webkit-app-region: drag;">
+        <h1>hello electron</h1>
+        <div>environment: <br/>${JSON.stringify(window.environment)}</div>
+        <br/>
+        <div>customize: <br/>${JSON.stringify(window.customize)}</div>
+        <button style="-webkit-app-region: no-drag;" onclick="window.ipc.send('window-close',${window.customize.id}n)">关闭</button>
+        The following is BrowserView
+        </div> `;
+      setTimeout(
+        () =>
+          window.ipc.send("window-func", {
+            type: "show",
+            id: window.customize.id,
+          }),
+        200
+      );
+    });
+  </script>
+</body>
+
+</html>

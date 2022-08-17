@@ -1,0 +1,322 @@
+import {
+  app,
+  AutoResizeOptions,
+  BrowserView,
+  BrowserWindow,
+  ipcMain,
+  session,
+} from "electron";
+import type {
+  BrowserViewConstructorOptions,
+  LoadFileOptions,
+  LoadURLOptions,
+  Rectangle,
+} from "electron";
+import { Snowflake } from "@mlmdflr/tools";
+import { windowInstance, windowOpenHandler } from "./window";
+import { logError } from "./log";
+import type { Customize_View } from "../types";
+
+function browserViewInit(
+  customize: Customize_View,
+  bvOptions: BrowserViewConstructorOptions = {}
+) {
+  if (!customize) throw new Error("not customize");
+  if (!customize.session) throw new Error("not customize session");
+  const isLocal = "route" in customize;
+  const sesIsPersistence = customize.session.persistence ?? false;
+  const sesCache = customize.session.cache ?? false;
+  let sesKey = customize.session.key;
+  !sesKey && (sesKey = new Snowflake(0n, 0n).nextId().toString());
+  sesKey = sesIsPersistence
+    ? `persist:${customize.session.key}`
+    : `${customize.session.key}`;
+  bvOptions.webPreferences = Object.assign(
+    {
+      preload: isLocal
+        ? windowInstance.defaultRoutePreload
+        : windowInstance.defaultUrlPreload,
+      contextIsolation: true,
+      nodeIntegration: false,
+      devTools: !app.isPackaged,
+      webSecurity: false,
+      session: session.fromPartition(sesKey, { cache: sesCache }),
+    },
+    bvOptions.webPreferences
+  );
+  const view = new BrowserView(bvOptions);
+  customize.id = view.webContents.id;
+  view.customize = customize;
+  viewInstance.setMap(`${customize.id}`, view);
+  return view;
+}
+
+async function load(url: string, view: BrowserView) {
+  windowOpenHandler(view.webContents);
+  view.webContents.on("did-attach-webview", (_, webContents) =>
+    windowOpenHandler(webContents)
+  );
+  // 注入初始化代码
+  view.webContents.on("did-finish-load", () => {
+    if ("route" in view.customize)
+      view.webContents.send(`load-route`, view.customize);
+    else view.webContents.send(`load-url`, view.customize);
+  });
+  //页面加载
+  if (url.startsWith("https://") || url.startsWith("http://"))
+    await view.webContents
+      .loadURL(url, view.customize.loadOptions as LoadURLOptions)
+      .catch(logError);
+  else
+    await view.webContents
+      .loadFile(url, view.customize.loadOptions as LoadFileOptions)
+      .catch(logError);
+  return view.webContents.id;
+}
+
+class View {
+  private static instance: View;
+
+  private view_map: Map<string, BrowserView>;
+
+  static getInstance() {
+    if (!View.instance) View.instance = new View();
+    return View.instance;
+  }
+
+  constructor() {
+    this.view_map = new Map();
+  }
+
+  /**
+   * 创建視圖
+   */
+  create = async (
+    customize: Customize_View,
+    opt: BrowserViewConstructorOptions
+  ) => {
+    const view = browserViewInit(customize, opt);
+    // 调试打开 DevTools
+    !app.isPackaged && view.webContents.openDevTools({ mode: "detach" });
+    if ("route" in view.customize)
+      return load(windowInstance.defaultLoadUrl, view);
+    else return load(view.customize.url, view);
+  };
+
+  setBounds = (id: number, bounds: Rectangle) => {
+    let view = this.hasMap(`${id}`) && this.getMap(`${id}`);
+    view && view.customize.mount && view.setBounds(bounds);
+  };
+
+  /**
+   * 設置背景顔色
+   */
+  setBackgroundColor = (args: { id: number; color: string }) => {
+    const view = this.getMap(`${args.id}`);
+    if (!view) throw Error(`viewId Invalid ${args.id}`);
+    view.setBackgroundColor(args.color);
+  };
+
+  /**
+   * 設置自動調整大小
+   */
+  setAutoResize = (args: { id: number; autoResize: AutoResizeOptions }) => {
+    const view = this.getMap(`${args.id}`);
+    if (!view) throw Error(`viewId Invalid ${args.id}`);
+    view.setAutoResize(args.autoResize);
+  };
+
+  getMap = (key: string) => this.view_map.get(key);
+
+  setMap = (key: string, view: BrowserView) => this.view_map.set(key, view);
+
+  hasMap = (key: string) => this.view_map.has(key);
+
+  delMap = (key: string) => this.view_map.delete(key);
+
+  unBindBV = (win: BrowserWindow, view: BrowserView, del: boolean = false) => {
+    let err = new Error(`BrowserWindow unbind error`);
+    switch (win.customize.viewType) {
+      case "Multiple":
+        if (!("customize" in view)) {
+          err.message += "\nwindow is Multiple >>> view is not customize";
+          throw err;
+        }
+        let prViews = win.getBrowserViews();
+        let vids = [view]
+          .filter((view) => view.customize)
+          .map((view) => view.customize.id);
+        for (const v of prViews)
+          v.customize &&
+            vids.includes(v.customize.id) &&
+            v.customize.mount &&
+            !(v.customize.mount = false) &&
+            ((win.removeBrowserView(v) as undefined) || true) &&
+            del &&
+            this.delMap(`${v.customize.id}`) &&
+            //@ts-ignore
+            v.webContents.destroy();
+        break;
+      case "Single":
+        if (!("customize" in view)) {
+          err.message += "\nwindow is Single >>> view is not customize";
+          throw err;
+        }
+        let prView = win.getBrowserView();
+        "customize" in view &&
+          prView &&
+          prView.customize &&
+          prView.customize.mount &&
+          prView.customize.id === view.customize.id &&
+          !(prView.customize.mount = false) &&
+          ((win.setBrowserView(null) as undefined) || true) &&
+          del &&
+          this.delMap(`${prView.customize.id}`) &&
+          //@ts-ignore
+          prView.webContents.destroy();
+        break;
+      default:
+        throw err;
+    }
+  };
+
+  bindBV = (win: BrowserWindow, view: BrowserView, bounds: Rectangle) => {
+    this.unBindBV(win, view);
+    let err = new Error(
+      `this BrowserWindow cannot bind,please check window customize`
+    );
+    if (win.customize && win.customize.viewType)
+      switch (win.customize.viewType) {
+        case "Single":
+          win.setBrowserView(view);
+          view.customize.mount = true;
+          break;
+        case "Multiple":
+          win.addBrowserView(view);
+          view.customize.mount = true;
+          break;
+        default:
+          throw err;
+      }
+    else {
+      throw err;
+    }
+    bounds && this.setBounds(view.customize.id as number, bounds);
+  };
+
+  createBindBV = async (
+    winId: bigint | number,
+    customize: Customize_View,
+    opt: BrowserViewConstructorOptions = {},
+    bounds: Rectangle
+  ) => {
+    let win = windowInstance.get(winId);
+    if (!win) throw Error("Invalid id, the id can not be a empty");
+    const id = await this.create({ ...customize, mount: false }, opt);
+    this.bindBV(win, this.view_map.get(`${id}`) as BrowserView, bounds);
+    return id;
+  };
+
+  on() {
+    //创建视图
+    ipcMain.handle("view-new", (_, args) =>
+      this.create(args.customize, args.opt)
+    );
+
+    //视图绑定
+    ipcMain.handle("view-bind", (_, args) => {
+      const view = this.getMap(`${args.id}`);
+      const win = windowInstance.get(args.wid);
+      if (!view) throw Error(`viewId Invalid ${args.id}`);
+      if (!win) throw Error(`WinId Invalid ${args.wid}`);
+      this.bindBV(win, view, args.bounds);
+    });
+
+    //视图解绑
+    ipcMain.handle("view-un-bind", (_, args) => {
+      const win = windowInstance.get(args.wid);
+      const view = this.getMap(`${args.id}`);
+      if (!view) throw Error(`viewId Invalid ${args.id}`);
+      if (!win) throw Error(`WinId Invalid ${args.wid}`);
+      this.unBindBV(win, view, args.del);
+    });
+
+    //视图销毁
+    ipcMain.handle("view-destroy", (event, args) => {
+      const view = this.getMap(`${args.id}`);
+      if (!view) throw Error(`viewId Invalid ${args.id}`);
+      //@ts-ignore
+      view.webContents.destroy();
+      return this.delMap(`${args.id}`);
+    });
+
+    //设置 bounds
+    ipcMain.handle("view-set-bounds", (_, args) =>
+      this.setBounds(args.id, args.bounds)
+    );
+
+    //创建并绑定
+    ipcMain.handle("view-create-bind", (_, args) =>
+      this.createBindBV(args.wid, args.customize, args.opt, args.bounds)
+    );
+
+    //view数据更新
+    ipcMain.on("view-update", (event, args) => {
+      if (args.id !== undefined && args.id !== null) {
+        const view = this.getMap(args.id);
+        if (!view) throw Error(`viewId Invalid ${args.id}`);
+        view.customize = args;
+      }
+    });
+
+    //设置背景颜色
+    ipcMain.on("view-bg-color-set", (_, args) => this.setBackgroundColor(args));
+
+    //设置是否自动调整大小
+    ipcMain.on("view-set-auto-resize", (_, args) => this.setAutoResize(args));
+
+    //view消息(指定发送)
+    ipcMain.on("view-message-send", (event, args) => {
+      let originId = event.sender.id;
+      if (args.acceptIds && args.acceptIds.length > 0) {
+        for (let i of args.acceptIds) {
+          let view = this.getMap(`${i}`);
+          if (view && i !== `${originId}`)
+            view.webContents.send(
+              `view-message-${args.channel}-back`,
+              args.value
+            );
+        }
+      }
+      if (args.isback) {
+        let view = this.getMap(`${originId}`);
+        if (view)
+          view.webContents.send(
+            `view-message-${args.channel}-back`,
+            args.value
+          );
+      }
+    });
+
+    //view消息(全部发送)
+    ipcMain.on("view-message-send-all", (event, args) => {
+      let originId = event.sender.id;
+      for (let [key, value] of this.view_map)
+        if (key !== `${originId}`)
+          value.webContents.send(
+            `window-message-${args.channel}-back`,
+            args.value
+          );
+      if (args.isback) {
+        let view = this.getMap(`${originId}`);
+        if (view)
+          view.webContents.send(
+            `view-message-${args.channel}-back`,
+            args.value
+          );
+      }
+    });
+  }
+}
+
+export const viewInstance = View.getInstance();

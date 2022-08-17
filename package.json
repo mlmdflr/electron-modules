@@ -1,0 +1,46 @@
+{
+  "name": "@mlmdflr/electron-modules",
+  "version": "2.0.0",
+  "description": "electron modules",
+  "license": "MIT",
+  "scripts": {
+    "b_publish": "prettier \"./src\" --write && rollup -c rollup.config.js && node build.js && cd dist && npm publish --registry registry.npmjs.org --access=public && cd ..",
+    "build": "prettier \"./src\" --write && rollup -c rollup.config.js && node build.js",
+    "build:watch": "rollup -c rollup.config.js -w",
+    "fix:prettier": "prettier \"./src\" --write",
+    "test:prettier": "prettier \"./src\" --list-different",
+    "test": " npx electron ./test/main.js"
+  },
+  "keywords": [
+    "electron"
+  ],
+  "author": "mlmdflr",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mlmdflr/electron-modules"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "engines": {
+    "node": ">=16.14.0"
+  },
+  "files": [
+    "**/*"
+  ],
+  "devDependencies": {
+    "@mlmdflr/tools": "^1.0.2",
+    "@rollup/plugin-commonjs": "^22.0.1",
+    "@rollup/plugin-json": "^4.1.0",
+    "@rollup/plugin-node-resolve": "^13.3.0",
+    "electron": "^20.0.2",
+    "electron-updater": "^5.2.1",
+    "iconv-lite": "^0.6.3",
+    "prettier": "^2.7.1",
+    "rollup": "^2.77.2",
+    "rollup-plugin-terser": "^7.0.2",
+    "rollup-plugin-typescript2": "^0.32.1",
+    "typescript": "^4.7.4"
+  }
+}
