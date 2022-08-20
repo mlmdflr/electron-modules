@@ -1,7 +1,7 @@
 import type { AllPublishOptions } from "builder-util-runtime";
 import type { AppUpdater } from "electron-updater";
 import type { UpdateMessage } from "../types";
-import { join } from "../node/path";
+import { join } from "node:path";
 import { AppImageUpdater, MacUpdater, NsisUpdater } from "electron-updater";
 import { delDir } from "./file";
 import { ipcMain, app } from "electron";

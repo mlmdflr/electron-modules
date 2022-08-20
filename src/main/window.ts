@@ -13,7 +13,7 @@ import type {
   WindowFuncOpt,
   WindowStatusOpt,
 } from "../types";
-import { join } from "../node/path";
+import { join } from "node:path";
 import { app, screen, ipcMain, BrowserWindow } from "electron";
 import { logError } from "./log";
 import { Snowflake } from "@mlmdflr/tools";

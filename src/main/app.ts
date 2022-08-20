@@ -1,6 +1,6 @@
 import type { Customize } from "../types";
 import { app, ipcMain, shell, nativeTheme } from "electron";
-import { resolve } from "../node/path";
+import { resolve } from "node:path";
 import { fileOn } from "./file";
 import { logOn, logError } from "./log";
 import { shortcutInstance } from "./shortcut";

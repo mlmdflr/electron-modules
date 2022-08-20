@@ -16,18 +16,18 @@ export const relaunch = (once: boolean): void =>
 /**
  * app打开url
  */
-export const openUrl = async (url: string): Promise<void> =>
-  await window.ipc.invoke("app-open-url", url);
+export const openUrl = (url: string): Promise<void> =>
+  window.ipc.invoke("app-open-url", url);
 
 /**
  * app常用信息
  * @returns
  */
-export const getAppInfo = async (): Promise<AppInfo> =>
-  await window.ipc.invoke("app-info-get");
+export const getAppInfo = (): Promise<AppInfo> =>
+  window.ipc.invoke("app-info-get");
 
 /**
  * app常用获取路径
  */
-export const getAppPath = async (key: AppPathKey): Promise<string> =>
-  await window.ipc.invoke("app-path-get", key);
+export const getAppPath = (key: AppPathKey): Promise<string> =>
+  window.ipc.invoke("app-path-get", key);

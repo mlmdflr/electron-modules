@@ -14,36 +14,34 @@ export const shortcutOn = (
  * @param name
  * @param key
  */
-export const shortcut = async (
-  name: string,
-  key: string | string[]
-): Promise<void> => await window.ipc.invoke("shortcut-register", { name, key });
+export const shortcut = (name: string, key: string | string[]): Promise<void> =>
+  window.ipc.invoke("shortcut-register", { name, key });
 
 /**
  * 清除快捷键
  * @param key
  */
-export const unShortcut = async (key: string): Promise<void> =>
-  await window.ipc.invoke("shortcut-unregister", key);
+export const unShortcut = (key: string): Promise<void> =>
+  window.ipc.invoke("shortcut-unregister", key);
 
 /**
  * 清空全部快捷键
  */
-export const unShortcutAll = async (): Promise<void> =>
-  await window.ipc.invoke("shortcut-unregisterAll");
+export const unShortcutAll = (): Promise<void> =>
+  window.ipc.invoke("shortcut-unregisterAll");
 
 /**
  * 获取已注册快捷键
  * @param key
  */
-export const shortcutGet = async (key: string): Promise<Accelerator> =>
-  await window.ipc.invoke("shortcut-get", key);
+export const shortcutGet = (key: string): Promise<Accelerator> =>
+  window.ipc.invoke("shortcut-get", key);
 
 /**
  * 获取全部已注册快捷键
  */
-export const shortcutGetAll = async (): Promise<Accelerator[]> =>
-  await window.ipc.invoke("shortcut-getAll");
+export const shortcutGetAll = (): Promise<Accelerator[]> =>
+  window.ipc.invoke("shortcut-getAll");
 
 /**
  * 获取快捷键以文本展示

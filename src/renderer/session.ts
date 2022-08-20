@@ -20,16 +20,15 @@ export const sessionCookiesGet = (args: CookiesGetFilter): Promise<Cookie[]> =>
  * 设置 cookies
  * @param args
  */
-export const sessionCookiesSet = async (
-  args: CookiesSetDetails
-): Promise<void> => window.ipc.invoke("session-cookies-set", args);
+export const sessionCookiesSet = (args: CookiesSetDetails): Promise<void> =>
+  window.ipc.invoke("session-cookies-set", args);
 
 /**
  * 移除 Cookies
  * @param url
  * @param name
  */
-export const sessionCookiesRemove = async (
+export const sessionCookiesRemove = (
   url: string,
   name: string
 ): Promise<void> => window.ipc.invoke("session-cookies-remove", { url, name });

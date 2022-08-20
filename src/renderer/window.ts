@@ -86,7 +86,7 @@ export const windowCreate = (
 /**
  * 窗口状态
  */
-export const windowStatus = async (
+export const windowStatus = (
   id: number | bigint = window.customize.id as number | bigint,
   type: WindowStatusOpt
 ): Promise<boolean> => window.ipc.invoke("window-status", { type, id });

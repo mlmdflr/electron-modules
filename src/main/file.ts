@@ -1,7 +1,7 @@
 import type { MakeDirectoryOptions } from "node:fs";
 import fs from "node:fs";
 import { createInterface } from "node:readline";
-import { resolve, extname } from "../node/path";
+import { resolve, extname } from "node:path";
 import { ipcMain } from "electron";
 
 /**

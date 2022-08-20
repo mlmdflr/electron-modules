@@ -1,5 +1,5 @@
 import { statSync, writeFileSync, appendFileSync } from "node:fs";
-import { sep } from "../node/path";
+import { sep } from "node:path";
 import { app, ipcMain } from "electron";
 import { EOL } from "../node/internal.constants";
 
