@@ -2,26 +2,16 @@ import type { IpcRendererEvent } from "electron";
 import { contextBridge, ipcRenderer } from "electron";
 import { sleep } from "@mlmdflr/tools";
 import { Snowflake } from "@mlmdflr/tools";
-import {
-  Ipc,
-  Customize_Route,
-  Customize_View,
-  Environment,
-  PlatformPath,
-} from "../types";
-import { EOL, isWindows } from "../node/internal.constants";
-import { posix, win32 } from "../node/path";
+import { Ipc, Customize_Route, Customize_View, Environment } from "../types";
 
 declare global {
   interface Window {
     ipc: Ipc;
     customize: Customize_Route | Customize_View;
     environment: Environment;
-    path?: PlatformPath;
   }
 }
 
-// not node
 export const preloadInit = (defaultEnv?: { [key: string]: any }) => {
   // ipcRender
   contextBridge.exposeInMainWorld("ipc", {
@@ -41,12 +31,8 @@ export const preloadInit = (defaultEnv?: { [key: string]: any }) => {
       ipcRenderer.removeAllListeners(channel),
   });
 
-  // node path module
-  contextBridge.exposeInMainWorld("path", isWindows ? win32 : posix);
-
   // customized environment
   contextBridge.exposeInMainWorld("environment", {
-    EOL,
     systemVersion: process.getSystemVersion(),
     platform: process.platform,
     ...defaultEnv,
