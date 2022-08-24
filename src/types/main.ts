@@ -49,7 +49,7 @@ export type Customize_Url = Customize_Window_Base & {
 export type Customize = Customize_Route | Customize_Url;
 
 export type Customize_View_Base = Customize_Base & {
-  // 唯一id
+  // 唯一id (view is webContents.id)
   id?: number;
   // 会话
   session: {

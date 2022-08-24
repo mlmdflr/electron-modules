@@ -7,7 +7,6 @@ import type {
 import type {
   Customize,
   Customize_Route,
-  Customize_View,
   ExtraOptions,
   WindowAlwaysOnTopOpt,
   WindowFuncOpt,
@@ -26,10 +25,6 @@ declare global {
 
     interface BrowserWindowConstructorOptions {
       customize?: Customize;
-    }
-
-    interface BrowserView {
-      customize: Customize_View;
     }
   }
 }

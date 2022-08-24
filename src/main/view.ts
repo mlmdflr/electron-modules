@@ -17,6 +17,14 @@ import { windowInstance, windowOpenHandler } from "./window";
 import { logError } from "./log";
 import type { Customize_View } from "../types";
 
+declare global {
+  module Electron {
+    interface BrowserView {
+      customize: Customize_View;
+    }
+  }
+}
+
 function browserViewInit(
   customize: Customize_View,
   bvOptions: BrowserViewConstructorOptions = {}
