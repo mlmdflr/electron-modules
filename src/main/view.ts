@@ -35,6 +35,8 @@ function browserViewInit(
   const sesIsPersistence = customize.session.persistence ?? false;
   const sesCache = customize.session.cache ?? false;
   let sesKey = customize.session.key;
+  //sesKey is default
+  const sesIsDefault = sesKey.toLowerCase() === "default";
   !sesKey && (sesKey = new Snowflake(0n, 0n).nextId().toString());
   sesKey = sesIsPersistence
     ? `persist:${customize.session.key}`
@@ -48,7 +50,9 @@ function browserViewInit(
       nodeIntegration: false,
       devTools: !app.isPackaged,
       webSecurity: false,
-      session: session.fromPartition(sesKey, { cache: sesCache }),
+      session: sesIsDefault
+        ? session.defaultSession
+        : session.fromPartition(sesKey, { cache: sesCache }),
     },
     bvOptions.webPreferences
   );

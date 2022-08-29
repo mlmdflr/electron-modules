@@ -39,9 +39,9 @@ export class Update {
     if (!app.isPackaged && !(process.platform === "darwin"))
       this.autoUpdater.updateConfigPath = join(defaultConfigPath);
     this.autoUpdater.logger = {
-      info: logInfo,
-      warn: logWarn,
-      error: logError,
+      info: app.isPackaged ? logInfo : console.info,
+      warn: app.isPackaged ? logWarn : console.warn,
+      error: app.isPackaged ? logError : console.error,
     };
   }
 

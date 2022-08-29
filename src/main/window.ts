@@ -73,8 +73,6 @@ function browserWindowAssembly(
       nodeIntegration: false,
       devTools: !app.isPackaged,
       webSecurity: false,
-      webviewTag:
-        isLocal && customize.route === windowInstance.defaultViewRoute,
     },
     bwOptions.webPreferences
   );
@@ -148,7 +146,7 @@ async function load(url: string, win: BrowserWindow) {
   // 窗口usb插拔消息监听
   process.platform === "win32" &&
     win.hookWindowMessage(0x0219, (wParam, lParam) =>
-      win.webContents.send("window-hook-message", { wParam, lParam })
+      win.webContents.send("window-hook-message-0x0219", { wParam, lParam })
     );
   win.webContents.on("did-finish-load", () => {
     if ("route" in win.customize)
@@ -194,9 +192,6 @@ export class Window {
   // html加载路径
   public defaultLoadUrl: string = join(__dirname, "../renderer/index.html");
 
-  // 外部窗口跳转路由（webview）
-  public defaultViewRoute: string = "/Webview";
-
   // 默认路由预加载路径
   public defaultRoutePreload: string = join(
     __dirname,
@@ -209,6 +204,7 @@ export class Window {
   // 默认配置
   public defaultExtraOptions: ExtraOptions = {
     modalWindowParentBlu: 5,
+    win32HookMsg278Delay: 32,
   };
 
   static getInstance = () => {
@@ -222,7 +218,6 @@ export class Window {
 
   setDefaultCfg = (cfg: WindwoDefaultCfg = {}) => {
     cfg.defaultLoadUrl && (this.defaultLoadUrl = cfg.defaultLoadUrl);
-    cfg.defaultViewRoute && (this.defaultViewRoute = cfg.defaultViewRoute);
     cfg.defaultRoutePreload &&
       (this.defaultRoutePreload = cfg.defaultRoutePreload);
     cfg.defaultUrlPreload && (this.defaultUrlPreload = cfg.defaultUrlPreload);
@@ -316,7 +311,10 @@ export class Window {
     process.platform === "win32" &&
       win.hookWindowMessage(278, () => {
         win.setEnabled(false);
-        win.setEnabled(true);
+        setTimeout(
+          () => win.setEnabled(true),
+          this.defaultExtraOptions.win32HookMsg278Delay
+        );
       });
 
     //子窗体关闭父窗体获焦 https://github.com/electron/electron/issues/10616

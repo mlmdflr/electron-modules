@@ -85,6 +85,7 @@ export interface ExtraOptions {
   [key: string]: any;
   //模态框背景模糊值(单位px)
   modalWindowParentBlu: number;
+  win32HookMsg278Delay: number;
 }
 
 export interface AppInfo {
