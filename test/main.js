@@ -5,22 +5,38 @@ const { viewInstance } = require("../dist/main/view");
 const { TrayInstance } = require("../dist/main/tray");
 const { readFile } = require("../dist/main/file");
 const { logError } = require("../dist/main/log");
-const { app } = require("electron");
+const { app, session } = require("electron");
 const { request } = require("../dist/main/net")
 const net = require("../dist/main/net").default
+const { Session } = require("../dist/main/session")
+appInstance.isDisableHardwareAcceleration = true
 appInstance
   .start()
   .then(async () => {
 
-    net('https://baidu.com', { method: 'GET', headers: { 'content-Type': 'text/html;charset=UTF-8', mlmdflr: 'test' } }).then(res => {
+    //使用单独会话发送请求示例
+    const baiduSess = new Session(`persist:baidu`)
+    baiduSess.urlHeaders = {
+      "https://baidu.com": {
+        "testToken": 'baidu'
+      }
+    }
+    baiduSess.on()
+    const electronSess = new Session(`persist:electron`)
+    electronSess.urlHeaders = {
+      "https://www.electronjs.org": {
+        "testToken": 'electron'
+      }
+    }
+    electronSess.on()
+    net('https://baidu.com', { session: baiduSess.session, method: 'GET', headers: { 'content-Type': 'text/html;charset=UTF-8', mlmdflr: 'test' } }).then(res => {
       res.text().then(text => {
         console.log('baidu:', text.length);
       })
     }).catch(err => {
       console.log(err);
     })
-
-    request('https://www.electronjs.org', { method: 'GET' }).then(res => {
+    request('https://www.electronjs.org', { session: electronSess.session, method: 'GET' }).then(res => {
       res.text().then(text => {
         console.log('electronjs:', text.length);
       })
