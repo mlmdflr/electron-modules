@@ -25,44 +25,6 @@ declare global {
   }
 }
 
-function browserViewInit(
-  customize: Customize_View,
-  bvOptions: BrowserViewConstructorOptions = {}
-) {
-  if (!customize) throw new Error("not customize");
-  if (!customize.session) throw new Error("not customize session");
-  const isLocal = "route" in customize;
-  const sesIsPersistence = customize.session.persistence ?? false;
-  const sesCache = customize.session.cache ?? false;
-  let sesKey = customize.session.key;
-  //sesKey is default
-  const sesIsDefault = sesKey.toLowerCase() === "default";
-  !sesKey && (sesKey = new Snowflake(0n, 0n).nextId().toString());
-  sesKey = sesIsPersistence
-    ? `persist:${customize.session.key}`
-    : `${customize.session.key}`;
-  bvOptions.webPreferences = Object.assign(
-    {
-      preload: isLocal
-        ? windowInstance.defaultRoutePreload
-        : windowInstance.defaultUrlPreload,
-      contextIsolation: true,
-      nodeIntegration: false,
-      devTools: !app.isPackaged,
-      webSecurity: false,
-      session: sesIsDefault
-        ? session.defaultSession
-        : session.fromPartition(sesKey, { cache: sesCache }),
-    },
-    bvOptions.webPreferences
-  );
-  const view = new BrowserView(bvOptions);
-  customize.id = view.webContents.id;
-  view.customize = customize;
-  viewInstance.setMap(`${customize.id}`, view);
-  return view;
-}
-
 async function load(url: string, view: BrowserView) {
   windowOpenHandler(view.webContents);
   view.webContents.on("did-attach-webview", (_, webContents) =>
@@ -89,7 +51,7 @@ async function load(url: string, view: BrowserView) {
 class View {
   private static instance: View;
 
-  private view_map: Map<string, BrowserView>;
+  #view_map: Map<string, BrowserView>;
 
   static getInstance() {
     if (!View.instance) View.instance = new View();
@@ -97,7 +59,45 @@ class View {
   }
 
   constructor() {
-    this.view_map = new Map();
+    this.#view_map = new Map();
+  }
+
+  browserViewInit = (
+    customize: Customize_View,
+    bvOptions: BrowserViewConstructorOptions = {}
+  ) => {
+    if (!customize) throw new Error("not customize");
+    if (!customize.session) throw new Error("not customize session");
+    const isLocal = "route" in customize;
+    const sesIsPersistence = customize.session.persistence ?? false;
+    const sesCache = customize.session.cache ?? false;
+    let sesKey = customize.session.key;
+    //sesKey is default
+    const sesIsDefault = sesKey.toLowerCase() === "default";
+    !sesKey && (sesKey = new Snowflake(0n, 0n).nextId().toString());
+    sesKey = sesIsPersistence && !sesKey.startsWith('persist:')
+      ? `persist:${customize.session.key}`
+      : `${customize.session.key}`;
+    bvOptions.webPreferences = Object.assign(
+      {
+        preload: isLocal
+          ? windowInstance.defaultRoutePreload
+          : windowInstance.defaultUrlPreload,
+        contextIsolation: true,
+        nodeIntegration: false,
+        devTools: !app.isPackaged,
+        webSecurity: false,
+        session: sesIsDefault
+          ? session.defaultSession
+          : session.fromPartition(sesKey, { cache: sesCache }),
+      },
+      bvOptions.webPreferences
+    );
+    const view = new BrowserView(bvOptions);
+    customize.id = view.webContents.id;
+    view.customize = customize;
+    viewInstance.#view_map.set(`${customize.id}`, view);
+    return view;
   }
 
   /**
@@ -107,7 +107,7 @@ class View {
     customize: Customize_View,
     opt: BrowserViewConstructorOptions
   ) => {
-    const view = browserViewInit(customize, opt);
+    const view = this.browserViewInit(customize, opt);
     // 调试打开 DevTools
     !app.isPackaged && view.webContents.openDevTools({ mode: "detach" });
     if ("route" in view.customize)
@@ -116,7 +116,7 @@ class View {
   };
 
   setBounds = (id: number, bounds: Rectangle) => {
-    let view = this.hasMap(`${id}`) && this.getMap(`${id}`);
+    let view = this.#view_map.has(`${id}`) && this.#view_map.get(`${id}`);
     view && view.customize.mount && view.setBounds(bounds);
   };
 
@@ -124,7 +124,7 @@ class View {
    * 設置背景顔色
    */
   setBackgroundColor = (args: { id: number; color: string }) => {
-    const view = this.getMap(`${args.id}`);
+    const view = this.#view_map.get(`${args.id}`);
     if (!view) throw Error(`viewId Invalid ${args.id}`);
     view.setBackgroundColor(args.color);
   };
@@ -133,18 +133,10 @@ class View {
    * 設置自動調整大小
    */
   setAutoResize = (args: { id: number; autoResize: AutoResizeOptions }) => {
-    const view = this.getMap(`${args.id}`);
+    const view = this.#view_map.get(`${args.id}`);
     if (!view) throw Error(`viewId Invalid ${args.id}`);
     view.setAutoResize(args.autoResize);
   };
-
-  getMap = (key: string) => this.view_map.get(key);
-
-  setMap = (key: string, view: BrowserView) => this.view_map.set(key, view);
-
-  hasMap = (key: string) => this.view_map.has(key);
-
-  delMap = (key: string) => this.view_map.delete(key);
 
   unBindBV = (win: BrowserWindow, view: BrowserView, del: boolean = false) => {
     let err = new Error(`BrowserWindow unbind error`);
@@ -165,7 +157,7 @@ class View {
             !(v.customize.mount = false) &&
             ((win.removeBrowserView(v) as undefined) || true) &&
             del &&
-            this.delMap(`${v.customize.id}`) &&
+            this.#view_map.delete(`${v.customize.id}`) &&
             //@ts-ignore
             v.webContents.destroy();
         break;
@@ -183,7 +175,7 @@ class View {
           !(prView.customize.mount = false) &&
           ((win.setBrowserView(null) as undefined) || true) &&
           del &&
-          this.delMap(`${prView.customize.id}`) &&
+          this.#view_map.delete(`${prView.customize.id}`) &&
           //@ts-ignore
           prView.webContents.destroy();
         break;
@@ -225,7 +217,7 @@ class View {
     let win = windowInstance.get(winId);
     if (!win) throw Error("Invalid id, the id can not be a empty");
     const id = await this.create({ ...customize, mount: false }, opt);
-    this.bindBV(win, this.view_map.get(`${id}`) as BrowserView, bounds);
+    this.bindBV(win, this.#view_map.get(`${id}`) as BrowserView, bounds);
     return id;
   };
 
@@ -237,7 +229,7 @@ class View {
 
     //视图绑定
     ipcMain.handle("view-bind", (_, args) => {
-      const view = this.getMap(`${args.id}`);
+      const view = this.#view_map.get(`${args.id}`);
       const win = windowInstance.get(args.wid);
       if (!view) throw Error(`viewId Invalid ${args.id}`);
       if (!win) throw Error(`WinId Invalid ${args.wid}`);
@@ -247,7 +239,7 @@ class View {
     //视图解绑
     ipcMain.handle("view-un-bind", (_, args) => {
       const win = windowInstance.get(args.wid);
-      const view = this.getMap(`${args.id}`);
+      const view = this.#view_map.get(`${args.id}`);
       if (!view) throw Error(`viewId Invalid ${args.id}`);
       if (!win) throw Error(`WinId Invalid ${args.wid}`);
       this.unBindBV(win, view, args.del);
@@ -255,11 +247,11 @@ class View {
 
     //视图销毁
     ipcMain.handle("view-destroy", (event, args) => {
-      const view = this.getMap(`${args.id}`);
+      const view = this.#view_map.get(`${args.id}`);
       if (!view) throw Error(`viewId Invalid ${args.id}`);
       //@ts-ignore
       view.webContents.destroy();
-      return this.delMap(`${args.id}`);
+      return this.#view_map.delete(`${args.id}`);
     });
 
     //设置 bounds
@@ -275,7 +267,7 @@ class View {
     //view数据更新
     ipcMain.on("view-update", (event, args) => {
       if (args.id !== undefined && args.id !== null) {
-        const view = this.getMap(args.id);
+        const view = this.#view_map.get(args.id);
         if (!view) throw Error(`viewId Invalid ${args.id}`);
         view.customize = args;
       }
@@ -292,7 +284,7 @@ class View {
       let originId = event.sender.id;
       if (args.acceptIds && args.acceptIds.length > 0) {
         for (let i of args.acceptIds) {
-          let view = this.getMap(`${i}`);
+          let view = this.#view_map.get(`${i}`);
           if (view && i !== `${originId}`)
             view.webContents.send(
               `view-message-${args.channel}-back`,
@@ -301,7 +293,7 @@ class View {
         }
       }
       if (args.isback) {
-        let view = this.getMap(`${originId}`);
+        let view = this.#view_map.get(`${originId}`);
         if (view)
           view.webContents.send(
             `view-message-${args.channel}-back`,
@@ -313,14 +305,14 @@ class View {
     //view消息(全部发送)
     ipcMain.on("view-message-send-all", (event, args) => {
       let originId = event.sender.id;
-      for (let [key, value] of this.view_map)
+      for (let [key, value] of this.#view_map)
         if (key !== `${originId}`)
           value.webContents.send(
             `window-message-${args.channel}-back`,
             args.value
           );
       if (args.isback) {
-        let view = this.getMap(`${originId}`);
+        let view = this.#view_map.get(`${originId}`);
         if (view)
           view.webContents.send(
             `view-message-${args.channel}-back`,

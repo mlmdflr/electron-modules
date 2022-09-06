@@ -1,6 +1,6 @@
 {
   "name": "@mlmdflr/electron-modules",
-  "version": "2.0.5",
+  "version": "2.0.6",
   "description": "electron modules",
   "license": "MIT",
   "scripts": {

@@ -1,7 +1,7 @@
 import type { IpcRendererEvent } from "electron";
 import { contextBridge, ipcRenderer } from "electron";
 import { sleep } from "@mlmdflr/tools";
-import { Snowflake } from "@mlmdflr/tools";
+import { Snowflake } from "@mlmdflr/tools/snowflake";
 import {
   Ipc,
   Customize_Route,

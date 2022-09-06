@@ -5,42 +5,43 @@ import type { treatedBytes } from "@mlmdflr/tools";
  * 设置http/https指定域名请求头
  * 键值对 => 域名: Headers
  */
-export const sessionHeadersSet = (args: {
-  [key: string]: { [key: string]: string };
-}) => window.ipc.send("session-headers-set", args);
+export const sessionHeadersSet = (
+  urlHeaders: { [key: string]: { [key: string]: string }; },
+  partition: string = 'default'
+) => window.ipc.send(`session-headers-set-${partition}`, urlHeaders);
 
 /**
  * 获取 cookies
- * @param args
  */
-export const sessionCookiesGet = (args: CookiesGetFilter): Promise<Cookie[]> =>
-  window.ipc.invoke("session-cookies-get", args);
+export const sessionCookiesGet = (cookiesGetFilter: CookiesGetFilter, partition: string = 'default'): Promise<Cookie[]> =>
+  window.ipc.invoke(`session-cookies-get-${partition}`, cookiesGetFilter);
 
 /**
  * 设置 cookies
- * @param args
  */
-export const sessionCookiesSet = (args: CookiesSetDetails): Promise<void> =>
-  window.ipc.invoke("session-cookies-set", args);
+export const sessionCookiesSet = (
+  cookiesGetFilter: CookiesSetDetails,
+  partition: string = 'default'
+): Promise<void> =>
+  window.ipc.invoke(`session-cookies-set-${partition}`, cookiesGetFilter);
 
 /**
  * 移除 Cookies
- * @param url
- * @param name
  */
 export const sessionCookiesRemove = (
   url: string,
-  name: string
-): Promise<void> => window.ipc.invoke("session-cookies-remove", { url, name });
+  name: string,
+  partition: string = 'default'
+): Promise<void> => window.ipc.invoke(`session-cookies-remove-${partition}`, { url, name });
 
 /**
  * 获取缓存大小
  */
-export const sessionCacheSize = (): Promise<treatedBytes> =>
-  window.ipc.invoke("session-cache-size");
+export const sessionCacheSize = (partition: string = 'default'): Promise<treatedBytes> =>
+  window.ipc.invoke(`session-cache-size-${partition}`);
 
 /**
  * 清除缓存
  */
-export const sessionCacheClear = (): Promise<void> =>
-  window.ipc.invoke("session-cache-clear");
+export const sessionCacheClear = (partition: string = 'default'): Promise<void> =>
+  window.ipc.invoke(`session-cache-clear-${partition}`);
