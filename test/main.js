@@ -69,16 +69,15 @@ appInstance
       }
     ).then(async winid => {
       //创建一个BrowserView并绑定上窗体
-      viewInstance.bindBV(windowInstance.get(winid), viewInstance.getMap(`${await viewInstance.create(
+      viewInstance.createBindBV(winid,
         {
           url: 'https://baidu.com',
           session: {
             key: 'baidu',
             persistence: true
           }
-        }
-      )}`),
-        //BrowserView大小和在窗体的位置
+        },
+        { sandbox: false, preload: join(__dirname, "../test/view-preload.js") },
         { width: 800, height: 400, x: 0, y: 270 }
       )
     })

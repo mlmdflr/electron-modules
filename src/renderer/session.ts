@@ -6,14 +6,17 @@ import type { treatedBytes } from "@mlmdflr/tools";
  * 键值对 => 域名: Headers
  */
 export const sessionHeadersSet = (
-  urlHeaders: { [key: string]: { [key: string]: string }; },
-  partition: string = 'default'
+  urlHeaders: { [key: string]: { [key: string]: string } },
+  partition: string = "default"
 ) => window.ipc.send(`session-headers-set-${partition}`, urlHeaders);
 
 /**
  * 获取 cookies
  */
-export const sessionCookiesGet = (cookiesGetFilter: CookiesGetFilter, partition: string = 'default'): Promise<Cookie[]> =>
+export const sessionCookiesGet = (
+  cookiesGetFilter: CookiesGetFilter,
+  partition: string = "default"
+): Promise<Cookie[]> =>
   window.ipc.invoke(`session-cookies-get-${partition}`, cookiesGetFilter);
 
 /**
@@ -21,7 +24,7 @@ export const sessionCookiesGet = (cookiesGetFilter: CookiesGetFilter, partition:
  */
 export const sessionCookiesSet = (
   cookiesGetFilter: CookiesSetDetails,
-  partition: string = 'default'
+  partition: string = "default"
 ): Promise<void> =>
   window.ipc.invoke(`session-cookies-set-${partition}`, cookiesGetFilter);
 
@@ -31,17 +34,21 @@ export const sessionCookiesSet = (
 export const sessionCookiesRemove = (
   url: string,
   name: string,
-  partition: string = 'default'
-): Promise<void> => window.ipc.invoke(`session-cookies-remove-${partition}`, { url, name });
+  partition: string = "default"
+): Promise<void> =>
+  window.ipc.invoke(`session-cookies-remove-${partition}`, { url, name });
 
 /**
  * 获取缓存大小
  */
-export const sessionCacheSize = (partition: string = 'default'): Promise<treatedBytes> =>
+export const sessionCacheSize = (
+  partition: string = "default"
+): Promise<treatedBytes> =>
   window.ipc.invoke(`session-cache-size-${partition}`);
 
 /**
  * 清除缓存
  */
-export const sessionCacheClear = (partition: string = 'default'): Promise<void> =>
-  window.ipc.invoke(`session-cache-clear-${partition}`);
+export const sessionCacheClear = (
+  partition: string = "default"
+): Promise<void> => window.ipc.invoke(`session-cache-clear-${partition}`);

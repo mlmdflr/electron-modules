@@ -6,11 +6,11 @@ import type {
 } from "electron";
 import type {
   Customize,
-  Customize_Route,
   ExtraOptions,
-  WindowAlwaysOnTopOpt,
   WindowFuncOpt,
   WindowStatusOpt,
+  Customize_Route,
+  WindowAlwaysOnTopOpt,
 } from "../types";
 import { join } from "node:path";
 import { app, screen, ipcMain, BrowserWindow } from "electron";

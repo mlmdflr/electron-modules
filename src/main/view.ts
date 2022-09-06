@@ -1,16 +1,11 @@
-import {
-  app,
-  AutoResizeOptions,
-  BrowserView,
-  BrowserWindow,
-  ipcMain,
-  session,
-} from "electron";
+import { app, BrowserView, BrowserWindow, ipcMain, session } from "electron";
 import type {
-  BrowserViewConstructorOptions,
-  LoadFileOptions,
-  LoadURLOptions,
   Rectangle,
+  WebPreferences,
+  LoadURLOptions,
+  LoadFileOptions,
+  AutoResizeOptions,
+  BrowserViewConstructorOptions,
 } from "electron";
 import { Snowflake } from "@mlmdflr/tools";
 import { windowInstance, windowOpenHandler } from "./window";
@@ -62,7 +57,7 @@ class View {
     this.#view_map = new Map();
   }
 
-  browserViewInit = (
+  private browserViewAssembly = (
     customize: Customize_View,
     bvOptions: BrowserViewConstructorOptions = {}
   ) => {
@@ -75,9 +70,10 @@ class View {
     //sesKey is default
     const sesIsDefault = sesKey.toLowerCase() === "default";
     !sesKey && (sesKey = new Snowflake(0n, 0n).nextId().toString());
-    sesKey = sesIsPersistence && !sesKey.startsWith('persist:')
-      ? `persist:${customize.session.key}`
-      : `${customize.session.key}`;
+    sesKey =
+      sesIsPersistence && !sesKey.startsWith("persist:")
+        ? `persist:${customize.session.key}`
+        : `${customize.session.key}`;
     bvOptions.webPreferences = Object.assign(
       {
         preload: isLocal
@@ -98,16 +94,13 @@ class View {
     view.customize = customize;
     viewInstance.#view_map.set(`${customize.id}`, view);
     return view;
-  }
+  };
 
   /**
    * 创建視圖
    */
-  create = async (
-    customize: Customize_View,
-    opt: BrowserViewConstructorOptions
-  ) => {
-    const view = this.browserViewInit(customize, opt);
+  create = async (customize: Customize_View, opt: WebPreferences) => {
+    const view = this.browserViewAssembly(customize, { webPreferences: opt });
     // 调试打开 DevTools
     !app.isPackaged && view.webContents.openDevTools({ mode: "detach" });
     if ("route" in view.customize)
@@ -211,7 +204,7 @@ class View {
   createBindBV = async (
     winId: bigint | number,
     customize: Customize_View,
-    opt: BrowserViewConstructorOptions = {},
+    opt: WebPreferences,
     bounds: Rectangle
   ) => {
     let win = windowInstance.get(winId);
@@ -265,7 +258,7 @@ class View {
     );
 
     //view数据更新
-    ipcMain.on("view-update", (event, args) => {
+    ipcMain.on("view-update", (_, args) => {
       if (args.id !== undefined && args.id !== null) {
         const view = this.#view_map.get(args.id);
         if (!view) throw Error(`viewId Invalid ${args.id}`);

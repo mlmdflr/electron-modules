@@ -1,8 +1,8 @@
 import type {
   IpcRendererEvent,
-  BrowserViewConstructorOptions,
   AutoResizeOptions,
   Rectangle,
+  WebPreferences,
 } from "electron";
 import type { Customize_View } from "../types";
 
@@ -56,7 +56,7 @@ export const viewMessageSendAll = (
 //创建视图
 export const viewCreate = (
   customize: Customize_View,
-  opt?: BrowserViewConstructorOptions
+  opt?: WebPreferences
 ): Promise<number> => window.ipc.invoke("view-new", { customize, opt });
 
 //新建并绑定
@@ -64,7 +64,7 @@ export const viewCreateBind = (
   wid: number | bigint,
   customize: Customize_View,
   bounds?: Rectangle,
-  opt?: BrowserViewConstructorOptions
+  opt?: WebPreferences
 ): Promise<number> =>
   window.ipc.invoke("view-create-bind", { wid, customize, opt, bounds });
 
