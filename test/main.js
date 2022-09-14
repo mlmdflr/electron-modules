@@ -5,7 +5,7 @@ const { viewInstance } = require("../dist/main/view");
 const { TrayInstance } = require("../dist/main/tray");
 const { readFile } = require("../dist/main/file");
 const { logError } = require("../dist/main/log");
-const { app } = require("electron");
+const { app, ipcMain } = require("electron");
 const { request } = require("../dist/main/net")
 const net = require("../dist/main/net").default
 const { Session } = require("../dist/main/session")
@@ -13,7 +13,6 @@ appInstance.isDisableHardwareAcceleration = true
 appInstance
   .start()
   .then(async () => {
-
     //使用单独会话发送请求示例
     const baiduSess = new Session(`persist:baidu`)
     baiduSess.urlHeaders = {
@@ -49,7 +48,7 @@ appInstance
     windowInstance.setDefaultCfg({
       defaultLoadUrl: join(__dirname, "../test/index.html"),
       defaultRoutePreload: join(__dirname, "../test/preload.js"),
-      defaultUrlPreload: join(__dirname, "../test/preload.js"),
+      defaultUrlPreload: join(__dirname, "../test/url-preload.js"),
     })
 
     //创建窗体
@@ -81,6 +80,24 @@ appInstance
         { width: 800, height: 400, x: 0, y: 270 }
       )
     })
+
+    //模态框
+    ipcMain.on('new-model-window', (_, id) => {
+      windowInstance.create(
+        {
+          route: '/',
+          parentId: id,
+          isOpenMultiWindow: true
+        },
+        {
+          show: true,
+          modal: true,
+          width: 400,
+          height: 325
+        }
+      )
+    })
+
 
     // 托盤
     const dataUrl = 'data:image/png;base64,' + await readFile(join(__dirname, '../test/tray.png'), { encoding: 'base64' })

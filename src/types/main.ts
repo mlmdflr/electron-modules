@@ -84,8 +84,9 @@ export type Customize_View = Customize_View_Route | Customize_View_Url;
 export interface ExtraOptions {
   [key: string]: any;
   //模态框背景模糊值(单位px)
-  modalWindowParentBlu: number;
-  win32HookMsg278Delay: number;
+  modalWindowParentBlu?: number;
+  win32HookMsg278Delay?: number;
+  isSetWindowOpenHandler?: boolean;
 }
 
 export interface AppInfo {

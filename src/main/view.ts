@@ -20,10 +20,14 @@ declare global {
   }
 }
 
-async function load(url: string, view: BrowserView) {
-  windowOpenHandler(view.webContents);
+async function load(
+  url: string,
+  view: BrowserView,
+  bvOptions: BrowserViewConstructorOptions
+) {
+  windowOpenHandler(view.webContents, bvOptions);
   view.webContents.on("did-attach-webview", (_, webContents) =>
-    windowOpenHandler(webContents)
+    windowOpenHandler(webContents, bvOptions)
   );
   // 注入初始化代码
   view.webContents.on("did-finish-load", () => {
@@ -93,19 +97,21 @@ class View {
     customize.id = view.webContents.id;
     view.customize = customize;
     viewInstance.#view_map.set(`${customize.id}`, view);
-    return view;
+    return { view, bvOptions };
   };
 
   /**
    * 创建視圖
    */
   create = async (customize: Customize_View, opt: WebPreferences) => {
-    const view = this.browserViewAssembly(customize, { webPreferences: opt });
+    const { view, bvOptions } = this.browserViewAssembly(customize, {
+      webPreferences: opt,
+    });
     // 调试打开 DevTools
     !app.isPackaged && view.webContents.openDevTools({ mode: "detach" });
     if ("route" in view.customize)
-      return load(windowInstance.defaultLoadUrl, view);
-    else return load(view.customize.url, view);
+      return load(windowInstance.defaultLoadUrl, view, bvOptions);
+    else return load(view.customize.url, view, bvOptions);
   };
 
   setBounds = (id: number, bounds: Rectangle) => {

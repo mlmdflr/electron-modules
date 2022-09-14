@@ -5,7 +5,6 @@ import {
   StringPrototypeLastIndexOf,
   StringPrototypeReplace,
   StringPrototypeIndexOf,
-  ObjectDefineProperty,
   FunctionPrototypeBind,
 } from "./global.primordials";
 

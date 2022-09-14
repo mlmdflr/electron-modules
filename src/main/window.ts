@@ -2,6 +2,7 @@ import type {
   BrowserWindowConstructorOptions,
   LoadFileOptions,
   LoadURLOptions,
+  Session,
   WebContents,
 } from "electron";
 import type {
@@ -123,26 +124,67 @@ function browserWindowAssembly(
 
 /**
  * 窗口打开预处理
+ * window.open 是不可预知的
  */
-export function windowOpenHandler(webContents: WebContents, parentId?: number) {
-  webContents.setWindowOpenHandler(({ url }) => {
-    windowInstance.create({
-      url,
-      parentId,
-    });
-    return { action: "deny" };
-  });
+export function windowOpenHandler(
+  webContents: WebContents,
+  bwOpt: BrowserWindowConstructorOptions,
+  parentId?: number
+) {
+  webContents.setWindowOpenHandler(
+    ({ url, frameName, features, disposition, referrer, postBody }) => {
+      //放弃继承
+      delete bwOpt?.webPreferences?.preload;
+      windowInstance
+        .create(
+          {
+            url,
+            parentId,
+            data: {
+              frameName,
+              features,
+              disposition,
+              referrer,
+              postBody,
+            },
+          },
+          Object.assign(bwOpt, {
+            frame: true,
+            titleBarStyle: "default",
+            resizable: true,
+            webPreferences: {
+              sandbox: true,
+              devTools: false,
+              webSecurity: true,
+              contextIsolation: true,
+              nodeIntegration: false,
+              session: webContents.session,
+            },
+          })
+        )
+        .then((winId) => {
+          winId !== undefined && windowInstance.get(winId)?.setMenu(null);
+        });
+      return { action: "deny" };
+    }
+  );
 }
 
 /**
  * 窗口加载
  */
-async function load(url: string, win: BrowserWindow) {
+async function load(
+  url: string,
+  win: BrowserWindow,
+  bwOpt: BrowserWindowConstructorOptions
+) {
   // 窗口内创建拦截
-  windowOpenHandler(win.webContents);
-  win.webContents.on("did-attach-webview", (_, webContents) =>
-    windowOpenHandler(webContents, win.id)
-  );
+  windowInstance.defaultExtraOptions.isSetWindowOpenHandler &&
+    windowOpenHandler(win.webContents, bwOpt, win.id);
+  windowInstance.defaultExtraOptions.isSetWindowOpenHandler &&
+    win.webContents.on("did-attach-webview", (_, webContents) =>
+      windowOpenHandler(webContents, bwOpt, win.id)
+    );
   // 窗口usb插拔消息监听
   process.platform === "win32" &&
     win.hookWindowMessage(0x0219, (wParam, lParam) =>
@@ -187,7 +229,7 @@ export class Window {
   private static instance: Window;
 
   //  此项保留私有，不允许外部访问
-  private insertCSSMap: Map<string, string>;
+  #insertCSSMap: Map<string, string>;
 
   // html加载路径
   public defaultLoadUrl: string = join(__dirname, "../renderer/index.html");
@@ -205,6 +247,7 @@ export class Window {
   public defaultExtraOptions: ExtraOptions = {
     modalWindowParentBlu: 5,
     win32HookMsg278Delay: 32,
+    isSetWindowOpenHandler: true,
   };
 
   static getInstance = () => {
@@ -213,7 +256,7 @@ export class Window {
   };
 
   constructor() {
-    this.insertCSSMap = new Map();
+    this.#insertCSSMap = new Map();
   }
 
   setDefaultCfg = (cfg: WindwoDefaultCfg = {}) => {
@@ -222,7 +265,10 @@ export class Window {
       (this.defaultRoutePreload = cfg.defaultRoutePreload);
     cfg.defaultUrlPreload && (this.defaultUrlPreload = cfg.defaultUrlPreload);
     cfg.defaultExtraOptions &&
-      (this.defaultExtraOptions = cfg.defaultExtraOptions);
+      (this.defaultExtraOptions = Object.assign(
+        this.defaultExtraOptions,
+        cfg.defaultExtraOptions
+      ));
   };
 
   /**
@@ -341,7 +387,7 @@ export class Window {
             `html{filter:blur(${this.defaultExtraOptions.modalWindowParentBlu}px);}`
           )
           .then((key) =>
-            windowInstance.insertCSSMap.set(
+            windowInstance.#insertCSSMap.set(
               `${win.getParentWindow()?.customize.id ?? "default"}`,
               key
             )
@@ -352,7 +398,7 @@ export class Window {
               `html{filter:blur(${this.defaultExtraOptions.modalWindowParentBlu}px);}`
             )
             .then((key) =>
-              windowInstance.insertCSSMap.set(`v${bv.customize.id}`, key)
+              windowInstance.#insertCSSMap.set(`v${bv.customize.id}`, key)
             );
       }
     }
@@ -367,9 +413,9 @@ export class Window {
           ? (win.customize.url = "https://" + win.customize.url)
           : (win.customize.url = "http://" + win.customize.url);
       }
-      return load(win.customize.url, win);
+      return load(win.customize.url, win, bwOpt);
     }
-    return load(this.defaultLoadUrl, win);
+    return load(this.defaultLoadUrl, win, bwOpt);
   };
 
   /**
@@ -501,6 +547,7 @@ export class Window {
         win.customize = args;
       }
     });
+
     // 最大化最小化窗口
     ipcMain.on("window-max-min-size", (event, id) => {
       if (id !== null && id !== undefined) {
@@ -523,11 +570,11 @@ export class Window {
         //模态框关闭父窗体恢复
         if (win.isModal() && win.customize.parentId) {
           let parentWin = this.get(win.customize.parentId),
-            mapValue = windowInstance.insertCSSMap.get(
+            mapValue = windowInstance.#insertCSSMap.get(
               `${parentWin?.customize.id ?? "default"}`
             ),
             vMapGet = (key: string) =>
-              windowInstance.insertCSSMap.get(
+              windowInstance.#insertCSSMap.get(
                 key === "vundefined" ? "default" : key
               ) as string;
           if (parentWin && mapValue) {

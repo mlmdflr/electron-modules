@@ -12,6 +12,8 @@
         <br/>
         <div>customize: <br/>${JSON.stringify(window.customize)}</div>
         <button style="-webkit-app-region: no-drag;" onclick="window.ipc.send('window-close',${window.customize.id}n)">关闭</button>
+        <button style="-webkit-app-region: no-drag;" onclick="window.ipc.send('new-model-window',${window.customize.id}n)">模态框</button>
+        <button style="-webkit-app-region: no-drag;" onclick="window.open('https://github.com/mlmdflr')">window.open</button>
         The following is BrowserView
         </div> `;
       setTimeout(

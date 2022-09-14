@@ -1,7 +1,7 @@
 import { statSync, writeFileSync, appendFileSync } from "node:fs";
 import { sep } from "node:path";
 import { app, ipcMain } from "electron";
-import { EOL } from "../node/internal.constants";
+import { EOL } from "node:os";
 
 const logFile: string = app.getPath("logs");
 
