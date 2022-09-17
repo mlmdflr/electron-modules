@@ -3,7 +3,7 @@ import { execSync } from "node:child_process";
 // win
 const WinRegBinPath =
   process.arch === "ia32" &&
-    process.env.hasOwnProperty("PROCESSOR_ARCHITEW6432")
+  process.env.hasOwnProperty("PROCESSOR_ARCHITEW6432")
     ? "%windir%\\sysnative\\cmd.exe /c %windir%\\System32"
     : "%windir%\\System32";
 const WinParameter =

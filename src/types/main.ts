@@ -99,6 +99,7 @@ export type AppPathKey =
   | "appData"
   | "userData"
   | "cache"
+  | "sessionData"
   | "temp"
   | "exe"
   | "module"

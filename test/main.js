@@ -13,6 +13,7 @@ appInstance.isDisableHardwareAcceleration = true
 appInstance
   .start()
   .then(async () => {
+    console.log(process.versions.electron);
     //使用单独会话发送请求示例
     const baiduSess = new Session(`persist:baidu`)
     baiduSess.urlHeaders = {

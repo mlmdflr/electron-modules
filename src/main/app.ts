@@ -1,4 +1,4 @@
-import type { Customize } from "../types";
+import type { AppPathKey, Customize } from "../types";
 import { app, ipcMain, shell, nativeTheme } from "electron";
 import { resolve } from "node:path";
 import { fileOn } from "./file";
@@ -162,7 +162,21 @@ class App {
       };
     });
     //app常用获取路径
-    ipcMain.handle("app-path-get", (_, args) => app.getPath(args));
+    ipcMain.handle("app-path-get", (_, args) => {
+      if (
+        Number(process.versions.electron.split(".")[0]) < 20 &&
+        args === "sessionData"
+      ) {
+        //@ts-ignore
+        return app.getPath("cache");
+      } else if (
+        Number(process.versions.electron.split(".")[0]) > 19 &&
+        args === "cache"
+      ) {
+        return app.getPath("sessionData");
+      }
+      return app.getPath(args);
+    });
     //系統默認打開url
     ipcMain.handle("app-open-url", async (_, args) => shell.openExternal(args));
     //app重启
