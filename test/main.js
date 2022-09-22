@@ -84,6 +84,7 @@ appInstance
 
     //模态框
     ipcMain.on('new-model-window', (_, id) => {
+      const customize = windowInstance.get(id)?.customize
       windowInstance.create(
         {
           route: '/',
@@ -93,8 +94,8 @@ appInstance
         {
           show: true,
           modal: true,
-          width: 400,
-          height: 325
+          width: customize.currentWidth / 2,
+          height: customize.currentHeight / 2,
         }
       )
     })

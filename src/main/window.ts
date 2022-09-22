@@ -321,7 +321,7 @@ export class Window {
   create = async (
     customize: Customize,
     bwOptions: BrowserWindowConstructorOptions = {}
-  ) => {
+  ): Promise<number | bigint> => {
     if ("route" in customize && !customize.isOpenMultiWindow) {
       for (const i of this.getAll()) {
         if (
@@ -331,7 +331,7 @@ export class Window {
           customize.route === i.customize.route
         ) {
           i.focus();
-          return i.customize.id;
+          return i.customize.id!;
         }
       }
     }

@@ -1,6 +1,6 @@
 {
   "name": "@mlmdflr/electron-modules",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "description": "electron modules",
   "license": "MIT",
   "scripts": {
@@ -34,7 +34,7 @@
     "@rollup/plugin-commonjs": "^22.0.2",
     "@rollup/plugin-json": "^4.1.0",
     "@rollup/plugin-node-resolve": "^14.1.0",
-    "electron": "^20.1.3",
+    "electron": "^20.2.0",
     "electron-updater": "^5.2.1",
     "prettier": "^2.7.1",
     "rollup": "^2.79.0",
