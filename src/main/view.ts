@@ -100,6 +100,8 @@ class View {
     return { view, bvOptions };
   };
 
+  getView = (id: number) => this.#view_map.get(`${id}`);
+
   /**
    * 创建視圖
    */
@@ -122,19 +124,19 @@ class View {
   /**
    * 設置背景顔色
    */
-  setBackgroundColor = (args: { id: number; color: string }) => {
-    const view = this.#view_map.get(`${args.id}`);
-    if (!view) throw Error(`viewId Invalid ${args.id}`);
-    view.setBackgroundColor(args.color);
+  setBackgroundColor = (id: number, color: string) => {
+    const view = this.#view_map.get(`${id}`);
+    if (!view) throw Error(`viewId Invalid ${id}`);
+    view.setBackgroundColor(color);
   };
 
   /**
    * 設置自動調整大小
    */
-  setAutoResize = (args: { id: number; autoResize: AutoResizeOptions }) => {
-    const view = this.#view_map.get(`${args.id}`);
-    if (!view) throw Error(`viewId Invalid ${args.id}`);
-    view.setAutoResize(args.autoResize);
+  setAutoResize = (id: number, autoResize: AutoResizeOptions) => {
+    const view = this.#view_map.get(`${id}`);
+    if (!view) throw Error(`viewId Invalid $id}`);
+    view.setAutoResize(autoResize);
   };
 
   unBindBV = (win: BrowserWindow, view: BrowserView, del: boolean = false) => {
@@ -273,10 +275,14 @@ class View {
     });
 
     //设置背景颜色
-    ipcMain.on("view-bg-color-set", (_, args) => this.setBackgroundColor(args));
+    ipcMain.on("view-bg-color-set", (_, args) =>
+      this.setBackgroundColor(args.id, args.color)
+    );
 
     //设置是否自动调整大小
-    ipcMain.on("view-set-auto-resize", (_, args) => this.setAutoResize(args));
+    ipcMain.on("view-set-auto-resize", (_, args) =>
+      this.setAutoResize(args.id, args.autoResize)
+    );
 
     //view消息(指定发送)
     ipcMain.on("view-message-send", (event, args) => {

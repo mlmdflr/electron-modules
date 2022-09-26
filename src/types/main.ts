@@ -71,6 +71,7 @@ export type Customize_View_Omit =
   | "viewType"
   | "isMainWin"
   | "parentId"
+  | "silenceFunc"
   | "argv";
 
 export type Customize_View_Route = Customize_View_Base &

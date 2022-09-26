@@ -50,14 +50,14 @@ class Tray {
     toolTip?: string,
     trayImgPath?: string
   ) => {
-    !this.main &&
-      (() => {
-        throw new Error(`Tray not created`);
-      })();
-    this.main.isDestroyed() &&
-      (() => {
-        throw new Error(`Tray is destroyed`);
-      })();
+    if (!this.main) {
+      throw new Error(`Tray not created`);
+    }
+
+    if (this.main.isDestroyed()) {
+      throw new Error(`Tray is destroyed`);
+    }
+
     this.main?.setContextMenu(Menu.buildFromTemplate(temp));
     toolTip && this.main?.setToolTip(toolTip);
     trayImgPath &&
