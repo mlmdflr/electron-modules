@@ -219,7 +219,6 @@ async function load(
 
 export interface WindwoDefaultCfg {
   defaultLoadUrl?: string;
-  defaultViewRoute?: string;
   defaultRoutePreload?: string;
   defaultUrlPreload?: string;
   defaultExtraOptions?: ExtraOptions;
