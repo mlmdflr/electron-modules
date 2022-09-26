@@ -135,7 +135,7 @@ class View {
    */
   setAutoResize = (id: number, autoResize: AutoResizeOptions) => {
     const view = this.#view_map.get(`${id}`);
-    if (!view) throw Error(`viewId Invalid $id}`);
+    if (!view) throw Error(`viewId Invalid ${id}`);
     view.setAutoResize(autoResize);
   };
 
