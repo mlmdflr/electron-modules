@@ -52,7 +52,7 @@ export const delDir = (path: string): void => {
  * 删除文件
  * @param path
  */
-export const unlink = (path: string) => {
+export const unlink = (path: string): Promise<0 | 1> => {
   return new Promise((resolve) =>
     fs.unlink(path, (err) => {
       if (err) resolve(0);
@@ -65,7 +65,7 @@ export const unlink = (path: string) => {
  * 检查文件是否存在于当前目录中、以及是否可写
  * @return 0 不存在 1 只可读 2 存在可读写
  */
-export const access = (path: string) => {
+export const access = (path: string): Promise<0 | 1 | 2> => {
   return new Promise((resolve) =>
     fs.access(path, fs.constants.F_OK, (err) => {
       if (err) err.code === "ENOENT" ? resolve(0) : resolve(1);
@@ -78,7 +78,7 @@ export const access = (path: string) => {
  * 文件重命名
  * @return 0 失败 1 成功
  */
-export const rename = (path: string, newPath: string) => {
+export const rename = (path: string, newPath: string): Promise<0 | 1> => {
   return new Promise((resolve) => {
     fs.rename(path, newPath, (err) => {
       if (err) resolve(0);
@@ -95,7 +95,7 @@ export const rename = (path: string, newPath: string) => {
 export const readFile = (
   path: string,
   options?: { encoding?: BufferEncoding; flag?: string }
-) => {
+): Promise<0 | string | Buffer> => {
   return new Promise((resolve) =>
     fs.readFile(path, options, (err, data) => {
       if (err) resolve(0);
@@ -146,7 +146,7 @@ export const readLine = (
  * @param options
  * @returns 0 失败 1成功
  */
-export const mkdir = async (path: string, options: MakeDirectoryOptions) => {
+export const mkdir = async (path: string, options: MakeDirectoryOptions): Promise<0 | 1> => {
   return new Promise((resolve) => {
     fs.mkdir(path, options || { recursive: true }, (err) => {
       if (err) {
@@ -165,7 +165,7 @@ export const writeFile = async (
   path: string,
   data: string | Buffer,
   options?: { encoding?: BufferEncoding; mode?: number | string; flag?: string }
-) => {
+): Promise<0 | 1> => {
   return new Promise((resolve) =>
     fs.writeFile(path, data, options || {}, (err) => {
       if (err) {
@@ -184,7 +184,7 @@ export const appendFile = async (
   path: string,
   data: string | Uint8Array,
   options?: { encoding?: BufferEncoding; mode?: number | string; flag?: string }
-) => {
+): Promise<0 | 1> => {
   return new Promise((resolve) =>
     fs.appendFile(path, data, options || {}, (err) => {
       if (err) {
