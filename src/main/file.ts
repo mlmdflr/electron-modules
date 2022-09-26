@@ -146,7 +146,10 @@ export const readLine = (
  * @param options
  * @returns 0 失败 1成功
  */
-export const mkdir = async (path: string, options: MakeDirectoryOptions): Promise<0 | 1> => {
+export const mkdir = async (
+  path: string,
+  options: MakeDirectoryOptions
+): Promise<0 | 1> => {
   return new Promise((resolve) => {
     fs.mkdir(path, options || { recursive: true }, (err) => {
       if (err) {
