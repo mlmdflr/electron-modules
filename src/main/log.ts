@@ -1,44 +1,7 @@
-import { statSync, writeFileSync, appendFileSync } from "node:fs";
-import { sep } from "node:path";
-import { app, BrowserWindow, ipcMain } from "electron";
-import { EOL } from "node:os";
+import { BrowserWindow, ipcMain } from "electron";
 import type { Customize, Customize_View } from "../types";
+import { log, write } from "./log.inside";
 import { viewInstance } from "./view";
-
-const logFile: string = app.getPath("logs");
-
-export const log = (...val: any) => {
-  let data = "";
-  val.forEach((e: any) => {
-    try {
-      if (typeof e === "object") data += JSON.stringify(e) + " ";
-      else data += e.toString() + " ";
-    } catch (e) {
-      data += e + " ";
-    }
-  });
-  return data;
-};
-
-export const write = (type: string, data: string) => {
-  const date = new Date();
-  const path =
-    logFile +
-    `${sep}${date.getFullYear()}-${(date.getMonth() + 1)
-      .toString()
-      .padStart(2, "0")}-${date
-      .getDate()
-      .toString()
-      .padStart(2, "0")}.${type}.log`;
-  const str = `[${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}] [${type}] ${data}${EOL}`;
-  try {
-    statSync(path);
-  } catch (e) {
-    writeFileSync(path, str);
-    return;
-  }
-  appendFileSync(path, str);
-};
 
 export const logWrapper = (
   type: "info" | "warn" | "error",

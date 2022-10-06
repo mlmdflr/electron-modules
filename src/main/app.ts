@@ -1,9 +1,9 @@
-import type { AppPathKey, Customize } from "../types";
+import type { Customize } from "../types";
 import { app, ipcMain, shell, nativeTheme } from "electron";
 import { resolve } from "node:path";
 import { fileOn } from "./file";
-import { logOn } from "./log";
 import { logError } from "./log.inside";
+import { logOn } from "./log";
 import { shortcutInstance } from "./shortcut";
 import { windowInstance } from "./window";
 import { viewInstance } from "./view";
