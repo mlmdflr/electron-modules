@@ -1,6 +1,6 @@
 {
   "name": "@mlmdflr/electron-modules",
-  "version": "2.1.5",
+  "version": "2.1.7",
   "description": "electron modules",
   "license": "MIT",
   "scripts": {
@@ -9,7 +9,7 @@
     "build:watch": "rollup -c rollup.config.js -w",
     "fix:prettier": "prettier \"./src\" --write",
     "test:prettier": "prettier \"./src\" --list-different",
-    "test": " npx electron ./test/main.js"
+    "test": "npx electron ./test/main.js"
   },
   "keywords": [
     "electron"

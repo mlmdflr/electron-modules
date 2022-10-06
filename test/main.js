@@ -68,7 +68,7 @@ appInstance
         resizable: false
       }
     ).then(async winid => {
-      //创建一个BrowserView并绑定上窗体
+      // 创建一个BrowserView并绑定上窗体
       viewInstance.createBindBV(winid,
         {
           url: 'https://baidu.com',
