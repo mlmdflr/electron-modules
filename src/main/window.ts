@@ -15,8 +15,8 @@ import type {
 } from "../types";
 import { join } from "node:path";
 import { app, screen, ipcMain, BrowserWindow } from "electron";
-import { logError } from "./log";
-import { Snowflake } from "@mlmdflr/tools";
+import { logError } from "./log.inside";
+import { Snowflake } from "../comm/utils.inside";
 
 declare global {
   module Electron {

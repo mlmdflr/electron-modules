@@ -7,7 +7,7 @@ import { viewInstance } from "./view";
 
 const logFile: string = app.getPath("logs");
 
-const log = (...val: any) => {
+export const log = (...val: any) => {
   let data = "";
   val.forEach((e: any) => {
     try {
@@ -20,7 +20,7 @@ const log = (...val: any) => {
   return data;
 };
 
-const write = (type: string, data: string) => {
+export const write = (type: string, data: string) => {
   const date = new Date();
   const path =
     logFile +
@@ -40,24 +40,7 @@ const write = (type: string, data: string) => {
   appendFileSync(path, str);
 };
 
-/**
- * error错误
- * @param val
- */
-export const logError = (...val: any) => write("error", log(val));
-
-/**
- * info警告
- * @param val
- */
-export const logWarn = (...val: any) => write("warn", log(val));
-/**
- * info日志
- * @param val
- */
-export const logInfo = (...val: any) => write("info", log(val));
-
-const logWrapper = (
+export const logWrapper = (
   type: "info" | "warn" | "error",
   webContentsId?: number,
   ...val: any

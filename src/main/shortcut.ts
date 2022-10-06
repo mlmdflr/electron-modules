@@ -1,7 +1,7 @@
 import { globalShortcut, ipcMain } from "electron";
 import { windowInstance } from "./window";
-import { deepCopy } from "@mlmdflr/tools";
 import type { Accelerator } from "../types";
+import { deepCopy } from "../comm/utils.inside";
 
 class Shortcut {
   private static instance: Shortcut;

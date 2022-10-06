@@ -4,7 +4,7 @@ import {
   Session as electronSessionType,
   session as electronSession,
 } from "electron";
-import { bytesToSize } from "@mlmdflr/tools/math";
+import { bytesToSize } from "../comm/utils.inside";
 
 /**
  * 监听

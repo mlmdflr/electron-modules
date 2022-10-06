@@ -6,7 +6,7 @@ import { AppImageUpdater, MacUpdater, NsisUpdater } from "electron-updater";
 import { delDir } from "./file";
 import { ipcMain, app } from "electron";
 import { windowInstance } from "./window";
-import { logInfo, logWarn, logError } from "./log";
+import { logInfo, logWarn, logError } from "./log.inside";
 
 /**
  * 更新模块 https://www.electron.build/auto-update

@@ -27,7 +27,6 @@ const external = [
   "./file",
   "./global",
   "./log",
-  "./path",
   "./session",
   "./shortcut",
   "./tray",
@@ -40,12 +39,7 @@ const external = [
   "../main.linux/machine",
   "../main.win32/machine",
   "../node/path",
-  "../node/internal.constants",
-  "./global.primordials",
-  "./internal.validators",
-  "./internal.constants",
-  "./internal.errors",
-  "./internal.util",
+  "../node/environment",
   "electron",
   "electron-updater",
   "builder-util-runtime",
@@ -99,6 +93,8 @@ flies.forEach((path) => {
     });
     return;
   }
+  //skip inside
+  if (path.endsWith('.inside')) return;
   config.push({
     input: `./src/${path}.ts`,
     output: [

@@ -7,10 +7,10 @@ import type {
   AutoResizeOptions,
   BrowserViewConstructorOptions,
 } from "electron";
-import { Snowflake } from "@mlmdflr/tools";
 import { windowInstance, windowOpenHandler } from "./window";
-import { logError } from "./log";
+import { logError } from "./log.inside";
 import type { Customize_View } from "../types";
+import { Snowflake } from "../comm/utils.inside";
 
 declare global {
   module Electron {

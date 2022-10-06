@@ -39,11 +39,6 @@
     global-agent "^3.0.0"
     global-tunnel-ng "^2.7.1"
 
-"@mlmdflr/tools@^1.0.3":
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/@mlmdflr/tools/-/tools-1.0.3.tgz#8bc5d68ed200b5831fb2ca15b74de7ca38916610"
-  integrity sha512-oZeVSCzQAuk5BYFeolGvvt68f023nAFiKS0pC5euCHd1hbbDBSZh3DR5yttis1Jf47Yp85qgTHiUvGhdEHhuTQ==
-
 "@rollup/plugin-commonjs@^22.0.2":
   version "22.0.2"
   resolved "https://registry.npmmirror.com/@rollup/plugin-commonjs/-/plugin-commonjs-22.0.2.tgz#ee8ca8415cda30d383b4096aad5222435b4b69b6"

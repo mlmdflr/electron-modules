@@ -14,7 +14,7 @@ import {
   StringPrototypeIncludes,
   StringPrototypeSlice,
   StringPrototypeToLowerCase,
-} from "./global.primordials";
+} from "./global.primordials.inside";
 
 const classRegExp = /^([A-Z][a-z0-9]*)+$/;
 const kTypes = [

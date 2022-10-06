@@ -1,5 +1,5 @@
 import { ipcMain } from "electron";
-import { logError } from "./log";
+import { logError } from "./log.inside";
 import { readFile } from "./file";
 
 type Obj<Value> = {} & {

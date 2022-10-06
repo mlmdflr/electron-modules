@@ -12,16 +12,16 @@ import {
   ObjectPrototypeHasOwnProperty,
   RegExpPrototypeExec,
   StringPrototypeTrim,
-} from "./global.primordials";
+} from "./global.primordials.inside";
 
 import {
   hideStackFrames,
   ERR_INVALID_ARG_VALUE,
   ERR_INVALID_ARG_TYPE,
   ERR_OUT_OF_RANGE,
-} from "./internal.errors";
+} from "./internal.errors.inside";
 
-import { normalizeEncoding } from "./internal.util";
+import { normalizeEncoding } from "./internal.util.inside";
 
 function isInt32(value: number) {
   return value === (value | 0);

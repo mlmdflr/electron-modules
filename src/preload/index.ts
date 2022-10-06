@@ -1,16 +1,21 @@
 import type { IpcRendererEvent } from "electron";
 import { contextBridge, ipcRenderer } from "electron";
-import { sleep } from "@mlmdflr/tools";
-import { Snowflake } from "@mlmdflr/tools/snowflake";
-import {
+import type {
   Ipc,
   Customize_Route,
   Customize_View,
   Environment,
   PlatformPath,
 } from "../types";
-import { EOL, isWindows } from "../node/internal.constants";
 import { posix, win32 } from "../node/path";
+import {
+  EOL,
+  isWindows,
+  isUsingAsar,
+  systemVersion,
+  platform,
+} from "../node/environment";
+import { sleep, Snowflake } from "../comm/utils.inside";
 
 declare global {
   interface Window {
@@ -47,8 +52,9 @@ export const preloadInit = (defaultEnv?: { [key: string]: any }) => {
   // customized environment
   contextBridge.exposeInMainWorld("environment", {
     EOL,
-    systemVersion: process.getSystemVersion(),
-    platform: process.platform,
+    platform,
+    isUsingAsar,
+    systemVersion,
     ...defaultEnv,
   });
 };

@@ -886,5 +886,3 @@ export const request = (
   const request = new Request({ requestURL, ...options });
   return request.send();
 };
-
-export default request;

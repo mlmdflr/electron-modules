@@ -1,5 +1,5 @@
 import type { CookiesGetFilter, CookiesSetDetails, Cookie } from "electron";
-import type { treatedBytes } from "@mlmdflr/tools";
+import type { treatedBytes } from "../comm/utils.inside";
 
 /**
  * 设置http/https指定域名请求头

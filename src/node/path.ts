@@ -6,7 +6,7 @@ import {
   StringPrototypeReplace,
   StringPrototypeIndexOf,
   FunctionPrototypeBind,
-} from "./global.primordials";
+} from "./global.primordials.inside";
 
 import {
   CHAR_UPPERCASE_A,
@@ -19,9 +19,9 @@ import {
   CHAR_COLON,
   CHAR_QUESTION_MARK,
   isWindows,
-} from "./internal.constants";
+} from "./internal.constants.inside";
 
-import { validateObject, validateString } from "./internal.validators";
+import { validateObject, validateString } from "./internal.validators.inside";
 
 import type {
   FormatInputPathObject,

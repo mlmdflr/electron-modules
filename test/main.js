@@ -7,7 +7,6 @@ const { readFile } = require("../dist/main/file");
 const { logError } = require("../dist/main/log");
 const { app, ipcMain } = require("electron");
 const { request } = require("../dist/main/net")
-const net = require("../dist/main/net").default
 const { Session } = require("../dist/main/session")
 appInstance.isDisableHardwareAcceleration = true
 appInstance
@@ -29,7 +28,7 @@ appInstance
       }
     }
     electronSess.on()
-    net('https://baidu.com', { session: baiduSess.session, method: 'GET', headers: { 'content-Type': 'text/html;charset=UTF-8', mlmdflr: 'test' } }).then(res => {
+    request('https://baidu.com', { session: baiduSess.session, method: 'GET', headers: { 'content-Type': 'text/html;charset=UTF-8', mlmdflr: 'test' } }).then(res => {
       res.text().then(text => {
         console.log('baidu response text:', text.length);
       })

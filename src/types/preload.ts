@@ -16,6 +16,8 @@ export interface Ipc {
 export interface Environment {
   [key: string]: any;
   EOL: string;
+  isWindows: boolean;
+  isUsingAsar: boolean;
   systemVersion: string;
   platform: NodeJS.Platform;
 }
