@@ -20,7 +20,7 @@ declare global {
   }
 }
 
-async function load(
+function load(
   url: string,
   view: BrowserView,
   bvOptions: BrowserViewConstructorOptions
@@ -37,11 +37,11 @@ async function load(
   });
   //页面加载
   if (url.startsWith("https://") || url.startsWith("http://"))
-    await view.webContents
+    view.webContents
       .loadURL(url, view.customize.loadOptions as LoadURLOptions)
       .catch(logError);
   else
-    await view.webContents
+    view.webContents
       .loadFile(url, view.customize.loadOptions as LoadFileOptions)
       .catch(logError);
   return view.webContents.id;
@@ -102,10 +102,12 @@ class View {
 
   getView = (id: number) => this.#view_map.get(`${id}`);
 
+  getViewAll = () => this.#view_map.values();
+
   /**
    * 创建視圖
    */
-  create = async (customize: Customize_View, opt: WebPreferences) => {
+  create = (customize: Customize_View, opt: WebPreferences) => {
     const { view, bvOptions } = this.browserViewAssembly(customize, {
       webPreferences: opt,
     });
@@ -209,7 +211,7 @@ class View {
     bounds && this.setBounds(view.customize.id as number, bounds);
   };
 
-  createBindBV = async (
+  createBindBV = (
     winId: bigint | number,
     customize: Customize_View,
     opt: WebPreferences,
@@ -217,7 +219,7 @@ class View {
   ) => {
     let win = windowInstance.get(winId);
     if (!win) throw Error("Invalid id, the id can not be a empty");
-    const id = await this.create({ ...customize, mount: false }, opt);
+    const id = this.create({ ...customize, mount: false }, opt);
     this.bindBV(win, this.#view_map.get(`${id}`) as BrowserView, bounds);
     return id;
   };

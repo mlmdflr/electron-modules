@@ -52,7 +52,7 @@ appInstance
     })
 
     //创建窗体
-    windowInstance.create(
+    let winid = windowInstance.create(
       {
         title: "electron-template",
         route: "/",
@@ -66,20 +66,20 @@ appInstance
         show: false,
         resizable: false
       }
-    ).then(async winid => {
-      // 创建一个BrowserView并绑定上窗体
-      viewInstance.createBindBV(winid,
-        {
-          url: 'https://baidu.com',
-          session: {
-            key: 'baidu',
-            persistence: true
-          }
-        },
-        { sandbox: false, preload: join(__dirname, "../test/view-preload.js") },
-        { width: 800, height: 400, x: 0, y: 270 }
-      )
-    })
+    )
+
+    // 创建一个BrowserView并绑定上窗体
+    viewInstance.createBindBV(winid,
+      {
+        url: 'https://baidu.com',
+        session: {
+          key: 'baidu',
+          persistence: true
+        }
+      },
+      { sandbox: false, preload: join(__dirname, "../test/view-preload.js") },
+      { width: 800, height: 400, x: 0, y: 270 }
+    )
 
     //模态框
     ipcMain.on('new-model-window', (_, id) => {

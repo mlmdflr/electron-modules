@@ -135,36 +135,33 @@ export function windowOpenHandler(
     ({ url, frameName, features, disposition, referrer, postBody }) => {
       //放弃继承
       delete bwOpt?.webPreferences?.preload;
-      windowInstance
-        .create(
-          {
-            url,
-            parentId,
-            data: {
-              frameName,
-              features,
-              disposition,
-              referrer,
-              postBody,
-            },
+      let winId = windowInstance.create(
+        {
+          url,
+          parentId,
+          data: {
+            frameName,
+            features,
+            disposition,
+            referrer,
+            postBody,
           },
-          Object.assign(bwOpt, {
-            frame: true,
-            titleBarStyle: "default",
-            resizable: true,
-            webPreferences: {
-              sandbox: true,
-              devTools: false,
-              webSecurity: true,
-              contextIsolation: true,
-              nodeIntegration: false,
-              session: webContents.session,
-            },
-          })
-        )
-        .then((winId) => {
-          winId !== undefined && windowInstance.get(winId)?.setMenu(null);
-        });
+        },
+        Object.assign(bwOpt, {
+          frame: true,
+          titleBarStyle: "default",
+          resizable: true,
+          webPreferences: {
+            sandbox: true,
+            devTools: false,
+            webSecurity: true,
+            contextIsolation: true,
+            nodeIntegration: false,
+            session: webContents.session,
+          },
+        })
+      );
+      winId !== undefined && windowInstance.get(winId)?.setMenu(null);
       return { action: "deny" };
     }
   );
@@ -173,7 +170,7 @@ export function windowOpenHandler(
 /**
  * 窗口加载
  */
-async function load(
+function load(
   url: string,
   win: BrowserWindow,
   bwOpt: BrowserWindowConstructorOptions
@@ -207,11 +204,11 @@ async function load(
   win.on("focus", () => win.webContents.send("window-blur-focus", "focus"));
 
   if (url.startsWith("https://") || url.startsWith("http://"))
-    await win
+    win
       .loadURL(url, win.customize.loadOptions as LoadURLOptions)
       .catch(logError);
   else
-    await win
+    win
       .loadFile(url, win.customize.loadOptions as LoadFileOptions)
       .catch(logError);
   return win.customize.id as number | bigint;
@@ -317,10 +314,10 @@ export class Window {
   /**
    * 创建窗口
    * */
-  create = async (
+  create = (
     customize: Customize,
     bwOptions: BrowserWindowConstructorOptions = {}
-  ): Promise<number | bigint> => {
+  ): number | bigint => {
     if ("route" in customize && !customize.isOpenMultiWindow) {
       for (const i of this.getAll()) {
         if (
