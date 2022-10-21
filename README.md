@@ -10,7 +10,7 @@ yarn add @mlmdflr/electron-modules
 ```
 
 ## use
-The [test](https://github.com/mlmdflr/electron-modules/tree/main/test) folder is also an example of a minimal implementation
+[examples](https://github.com/mlmdflr/electron-modules/tree/main/test)
 
 ## template or demo
 
@@ -20,3 +20,7 @@ The [test](https://github.com/mlmdflr/electron-modules/tree/main/test) folder is
 ## Learning Sources
 
 [youli@electron-modules](https://github.com/youliso/electron-modules)
+
+
+[islizeqiang@electron-request](https://github.com/islizeqiang/electron-request)
+

@@ -8,6 +8,7 @@ const { logError } = require("../dist/main/log");
 const { app, ipcMain } = require("electron");
 const { request } = require("../dist/main/net")
 const { Session } = require("../dist/main/session")
+
 appInstance.isDisableHardwareAcceleration = true
 appInstance
   .start()
@@ -46,9 +47,9 @@ appInstance
 
     //設置一些默認配置
     windowInstance.setDefaultCfg({
-      defaultLoadUrl: join(__dirname, "../test/index.html"),
-      defaultRoutePreload: join(__dirname, "../test/preload.js"),
-      defaultUrlPreload: join(__dirname, "../test/url-preload.js"),
+      defaultLoadUrl: join(__dirname, "../examples/index.html"),
+      defaultRoutePreload: join(__dirname, "../examples/preload.js"),
+      defaultUrlPreload: join(__dirname, "../examples/url-preload.js"),
     })
 
     //创建窗体
@@ -68,6 +69,7 @@ appInstance
       }
     )
 
+
     // 创建一个BrowserView并绑定上窗体
     viewInstance.createBindBV(winid,
       {
@@ -77,7 +79,7 @@ appInstance
           persistence: true
         }
       },
-      { sandbox: false, preload: join(__dirname, "../test/view-preload.js") },
+      { sandbox: false, preload: join(__dirname, "../examples/view-preload.js") },
       { width: 800, height: 400, x: 0, y: 270 }
     )
 
@@ -101,7 +103,7 @@ appInstance
 
 
     // 托盤
-    const dataUrl = 'data:image/png;base64,' + await readFile(join(__dirname, '../test/tray.png'), { encoding: 'base64' })
+    const dataUrl = 'data:image/png;base64,' + await readFile(join(__dirname, '../examples/tray.png'), { encoding: 'base64' })
     TrayInstance.create(dataUrl);
     TrayInstance.main.on('click', () => windowInstance.func('show'))
   })

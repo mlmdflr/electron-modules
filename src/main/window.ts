@@ -2,7 +2,6 @@ import type {
   BrowserWindowConstructorOptions,
   LoadFileOptions,
   LoadURLOptions,
-  Session,
   WebContents,
 } from "electron";
 import type {
@@ -419,7 +418,7 @@ export class Window {
    */
   func = (type: WindowFuncOpt, id?: number, data?: any[]) => {
     if (id !== null && id !== undefined) {
-      const win = this.get(id as number);
+      const win = this.get(id);
       if (!win) throw Error(`not found this window -> ${id}`);
       // @ts-ignore
       data ? win[type](...data) : win[type]();
@@ -439,7 +438,7 @@ export class Window {
    */
   send = (key: string, value: any, id?: number) => {
     if (id !== null && id !== undefined) {
-      const win = this.get(id as number);
+      const win = this.get(id);
       if (win) win.webContents.send(key, value);
     } else for (const i of this.getAll()) i.webContents.send(key, value);
   };
