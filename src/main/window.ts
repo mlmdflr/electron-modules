@@ -389,7 +389,7 @@ export class Window {
           );
         for (const bv of pwin.getBrowserViews())
           bv.webContents
-            .insertCSS(
+            ?.insertCSS(
               `html{filter:blur(${this.defaultExtraOptions.modalWindowParentBlu}px);}`
             )
             .then((key) =>
@@ -576,7 +576,7 @@ export class Window {
             parentWin.webContents.removeInsertedCSS(mapValue);
             for (const bv of parentWin.getBrowserViews())
               vMapGet(`v${bv.customize.id}`) &&
-                bv.webContents.removeInsertedCSS(
+                bv.webContents?.removeInsertedCSS(
                   vMapGet(`v${bv.customize.id}`)
                 );
           }
@@ -643,21 +643,13 @@ export class Window {
         const win = this.get(args.id);
         if (!win) throw Error(`not found this window -> ${args.id}`);
         if (win.customize)
-          switch (win.customize.viewType) {
-            case "None":
-              return;
-            case "Single":
-              let view = win.getBrowserView();
-              if (view && view.customize) return view.customize.id;
-              break;
-            case "Multiple":
-              return win
-                .getBrowserViews()
-                .filter((view) => view.customize)
-                .map((view) => view.customize.id);
-          }
+          return win
+            .getBrowserViews()
+            .filter((view) => view.customize)
+            .map((view) => view.customize.id);
+        else throw Error(`this window is customize window -> ${args.id}`);
       }
-      return;
+      return [];
     });
   };
 }

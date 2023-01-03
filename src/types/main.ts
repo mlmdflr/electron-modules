@@ -15,15 +15,11 @@ export interface Customize_Base {
   data?: any;
 }
 
-export type ViewType = "None" | "Single" | "Multiple";
-
 export type Customize_Window_Base = Customize_Base & {
   // 父类窗口是否全屏
   currentMaximized?: boolean;
   // 是否主窗口(当为true时会替代当前主窗口)
   isMainWin?: boolean;
-  // 附加 BrowserView 類別
-  viewType?: ViewType;
   // 父窗口id
   parentId?: number | bigint;
   // 进程参数
@@ -68,7 +64,6 @@ export type Customize_View_Omit =
   | "currentWidth"
   | "currentHeight"
   | "currentMaximized"
-  | "viewType"
   | "isMainWin"
   | "parentId"
   | "silenceFunc"

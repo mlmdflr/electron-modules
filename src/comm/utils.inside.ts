@@ -1,25 +1,13 @@
-/**
- * @description 雪花算法类,用于生成随机id
- * @author 没礼貌的芬兰人
- * @date 2021-10-06 17:13:16
- */
 export class Snowflake {
   private static twepoch = 1658110470937n;
 
-  private static workerIdBits: bigint = 5n;
-  private static dataCenterIdBits: bigint = 5n;
-  private static sequenceBits: bigint = 12n;
+  private static maxWorkerId: bigint = -1n ^ (-1n << 5n);
+  private static maxDataCenterId: bigint = -1n ^ (-1n << 5n);
+  private static sequenceMask: bigint = -1n ^ (-1n << 12n);
 
-  private static maxWorkerId: bigint = -1n ^ (-1n << Snowflake.workerIdBits);
-  private static maxDataCenterId: bigint =
-    -1n ^ (-1n << Snowflake.dataCenterIdBits);
-  private static sequenceMask: bigint = -1n ^ (-1n << Snowflake.sequenceBits);
-
-  private static workerIdShift: bigint = Snowflake.sequenceBits;
-  private static dataCenterIdShift: bigint =
-    Snowflake.sequenceBits + Snowflake.workerIdBits;
-  private static timestampLeftShift: bigint =
-    Snowflake.dataCenterIdShift + Snowflake.dataCenterIdBits;
+  private static workerIdShift: bigint = 12n;
+  private static dataCenterIdShift: bigint = 17n;
+  private static timestampLeftShift: bigint = 22n;
 
   private static sequence: bigint = 0n;
   private static lastTimestamp: bigint = -1n;

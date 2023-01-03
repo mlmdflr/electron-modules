@@ -143,48 +143,24 @@ class View {
 
   unBindBV = (win: BrowserWindow, view: BrowserView, del: boolean = false) => {
     let err = new Error(`BrowserWindow unbind error`);
-    switch (win.customize.viewType) {
-      case "Multiple":
-        if (!("customize" in view)) {
-          err.message += "\nwindow is Multiple >>> view is not customize";
-          throw err;
-        }
-        let prViews = win.getBrowserViews();
-        let vids = [view]
-          .filter((view) => view.customize)
-          .map((view) => view.customize.id);
-        for (const v of prViews)
-          v.customize &&
-            vids.includes(v.customize.id) &&
-            v.customize.mount &&
-            !(v.customize.mount = false) &&
-            ((win.removeBrowserView(v) as undefined) || true) &&
-            del &&
-            this.#view_map.delete(`${v.customize.id}`) &&
-            //@ts-ignore
-            v.webContents.destroy();
-        break;
-      case "Single":
-        if (!("customize" in view)) {
-          err.message += "\nwindow is Single >>> view is not customize";
-          throw err;
-        }
-        let prView = win.getBrowserView();
-        "customize" in view &&
-          prView &&
-          prView.customize &&
-          prView.customize.mount &&
-          prView.customize.id === view.customize.id &&
-          !(prView.customize.mount = false) &&
-          ((win.setBrowserView(null) as undefined) || true) &&
-          del &&
-          this.#view_map.delete(`${prView.customize.id}`) &&
-          //@ts-ignore
-          prView.webContents.destroy();
-        break;
-      default:
-        throw err;
+    if (!("customize" in view)) {
+      err.message += "\nwindow is Multiple >>> view is not customize";
+      throw err;
     }
+    let prViews = win.getBrowserViews();
+    let vids = [view]
+      .filter((view) => view.customize)
+      .map((view) => view.customize.id);
+    for (const v of prViews)
+      v.customize &&
+        vids.includes(v.customize.id) &&
+        v.customize.mount &&
+        !(v.customize.mount = false) &&
+        ((win.removeBrowserView(v) as undefined) || true) &&
+        del &&
+        this.#view_map.delete(`${v.customize.id}`) &&
+        //@ts-ignore
+        v.webContents.destroy();
   };
 
   bindBV = (win: BrowserWindow, view: BrowserView, bounds: Rectangle) => {
@@ -192,20 +168,10 @@ class View {
     let err = new Error(
       `this BrowserWindow cannot bind,please check window customize`
     );
-    if (win.customize && win.customize.viewType)
-      switch (win.customize.viewType) {
-        case "Single":
-          win.setBrowserView(view);
-          view.customize.mount = true;
-          break;
-        case "Multiple":
-          win.addBrowserView(view);
-          view.customize.mount = true;
-          break;
-        default:
-          throw err;
-      }
-    else {
+    if (win.customize) {
+      win.addBrowserView(view);
+      view.customize.mount = true;
+    } else {
       throw err;
     }
     bounds && this.setBounds(view.customize.id as number, bounds);
