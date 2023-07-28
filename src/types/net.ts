@@ -128,7 +128,7 @@ export interface Response {
   download: (
     destination: Writable,
     onProgress?: ProgressCallback,
-    validateOptions?: ValidateOptions
+    validateOptions?: ValidateOptions,
   ) => Promise<void>;
 }
 

@@ -17,11 +17,11 @@ export class Snowflake {
   constructor(workerId: bigint, dataCenterId: bigint) {
     if (workerId > Snowflake.maxWorkerId || workerId < 0n)
       throw new Error(
-        `workerId can't be greater than ${Snowflake.maxWorkerId} or less than 0`
+        `workerId can't be greater than ${Snowflake.maxWorkerId} or less than 0`,
       );
     if (dataCenterId > Snowflake.maxDataCenterId || dataCenterId < 0n)
       throw new Error(
-        `dataCenterId can't be greater than ${Snowflake.maxDataCenterId} or less than 0`
+        `dataCenterId can't be greater than ${Snowflake.maxDataCenterId} or less than 0`,
       );
     Snowflake.workerId = workerId;
     Snowflake.dataCenterId = dataCenterId;
@@ -32,7 +32,7 @@ export class Snowflake {
     const diff = timestamp - Snowflake.lastTimestamp;
     if (diff < 0n)
       throw new Error(
-        `Clock moved backwards. Refusing to generate id for ${-diff} milliseconds`
+        `Clock moved backwards. Refusing to generate id for ${-diff} milliseconds`,
       );
     if (diff === 0n) {
       Snowflake.sequence = (Snowflake.sequence + 1n) & Snowflake.sequenceMask;
@@ -99,7 +99,7 @@ export function sleep<T>(duration: number, value?: T): Promise<T> {
   return new Promise((resolve): any =>
     setTimeout(() => {
       resolve(value as T);
-    }, durationInMilliseconds)
+    }, durationInMilliseconds),
   );
 }
 
@@ -118,7 +118,7 @@ const units = [
   "DB",
 ] as const;
 
-type unit = typeof units[number];
+type unit = (typeof units)[number];
 
 export type treatedBytes = { bytes: number; unit: unit };
 

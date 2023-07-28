@@ -6,7 +6,7 @@ import type { Accelerator } from "../types";
  * @param listener
  */
 export const shortcutOn = (
-  listener: (event: IpcRendererEvent, args: any) => void
+  listener: (event: IpcRendererEvent, args: any) => void,
 ) => window.ipc.on(`shortcut-back`, listener);
 
 /**

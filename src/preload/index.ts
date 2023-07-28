@@ -35,11 +35,11 @@ export const preloadInit = (defaultEnv?: { [key: string]: any }) => {
       ipcRenderer.sendSync(channel, args),
     on: (
       channel: string,
-      listener: (event: IpcRendererEvent, ...args: any[]) => void
+      listener: (event: IpcRendererEvent, ...args: any[]) => void,
     ) => ipcRenderer.on(channel, listener),
     once: (
       channel: string,
-      listener: (event: IpcRendererEvent, ...args: any[]) => void
+      listener: (event: IpcRendererEvent, ...args: any[]) => void,
     ) => ipcRenderer.once(channel, listener),
     invoke: (channel: string, args: any) => ipcRenderer.invoke(channel, args),
     removeAllListeners: (channel: string) =>
@@ -64,12 +64,12 @@ export const urlPreloadInit = (defaultEnv?: { [key: string]: any }) => {
   preloadInit(defaultEnv);
   //挂载休眠方法
   contextBridge.exposeInMainWorld("Sleep", (duration: number, value: any) =>
-    sleep(duration, value)
+    sleep(duration, value),
   );
   //挂载雪花算法
   contextBridge.exposeInMainWorld(
     "Snowflake",
     (workerId: bigint, dataCenterId: bigint) =>
-      new Snowflake(workerId, dataCenterId).nextId()
+      new Snowflake(workerId, dataCenterId).nextId(),
   );
 };

@@ -82,15 +82,15 @@ class App {
               ...this.windowDefaultCustomize,
               argv,
             },
-            this.windowDefaultOpt
+            this.windowDefaultOpt,
           );
         } else
           app.isPackaged
             ? logError(
-                "second-instance >>> windowDefaultCustomize No configuration"
+                "second-instance >>> windowDefaultCustomize No configuration",
               )
             : console.error(
-                "second-instance >>> windowDefaultCustomize No configuration"
+                "second-instance >>> windowDefaultCustomize No configuration",
               );
       });
     }
@@ -100,12 +100,12 @@ class App {
         "[render-process-gone]",
         webContents.getTitle(),
         webContents.getURL(),
-        JSON.stringify(details)
-      )
+        JSON.stringify(details),
+      ),
     );
     // 子进程崩溃监听
     app.on("child-process-gone", (_, details) =>
-      logError("[child-process-gone]", JSON.stringify(details))
+      logError("[child-process-gone]", JSON.stringify(details)),
     );
     // 关闭所有窗口退出
     app.on("window-all-closed", () => {
@@ -130,16 +130,16 @@ class App {
         if (this.windowDefaultCustomize) {
           windowInstance.create(
             this.windowDefaultCustomize,
-            this.windowDefaultOpt
+            this.windowDefaultOpt,
           );
         }
       } else
         app.isPackaged
           ? logError(
-              "darwin activate >>> windowDefaultCustomize No configuration"
+              "darwin activate >>> windowDefaultCustomize No configuration",
             )
           : console.error(
-              "darwin activate >>> windowDefaultCustomize No configuration"
+              "darwin activate >>> windowDefaultCustomize No configuration",
             );
     });
     // 获得焦点时发出
@@ -148,11 +148,11 @@ class App {
         name: "关闭刷新",
         key: "CommandOrControl+R",
         callback: () => {},
-      })
+      }),
     );
     // 失去焦点时发出
     app.on("browser-window-blur", () =>
-      shortcutInstance.unregister("CommandOrControl+R")
+      shortcutInstance.unregister("CommandOrControl+R"),
     );
 
     //app常用信息
@@ -188,7 +188,7 @@ class App {
     //app开机自启
     ipcMain.on(
       "app-launch",
-      (event, args) => (event.returnValue = this.autoLaunchSwitch(args))
+      (event, args) => (event.returnValue = this.autoLaunchSwitch(args)),
     );
   };
   /**

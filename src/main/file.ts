@@ -57,7 +57,7 @@ export const unlink = (path: string): Promise<0 | 1> => {
     fs.unlink(path, (err) => {
       if (err) resolve(0);
       else resolve(1);
-    })
+    }),
   );
 };
 
@@ -70,7 +70,7 @@ export const access = (path: string): Promise<0 | 1 | 2> => {
     fs.access(path, fs.constants.F_OK, (err) => {
       if (err) err.code === "ENOENT" ? resolve(0) : resolve(1);
       else resolve(2);
-    })
+    }),
   );
 };
 
@@ -94,13 +94,13 @@ export const rename = (path: string, newPath: string): Promise<0 | 1> => {
  */
 export const readFile = (
   path: string,
-  options?: { encoding?: BufferEncoding; flag?: string }
+  options?: { encoding?: BufferEncoding; flag?: string },
 ): Promise<0 | string | Buffer> => {
   return new Promise((resolve) =>
     fs.readFile(path, options, (err, data) => {
       if (err) resolve(0);
       resolve(data);
-    })
+    }),
   );
 };
 
@@ -111,7 +111,7 @@ export const readFile = (
  */
 export const readLine = (
   path: string,
-  index?: number
+  index?: number,
 ): Promise<string | any[]> | null => {
   const io = createInterface({
     input: fs.createReadStream(path),
@@ -148,7 +148,7 @@ export const readLine = (
  */
 export const mkdir = async (
   path: string,
-  options: MakeDirectoryOptions
+  options: MakeDirectoryOptions,
 ): Promise<0 | 1> => {
   return new Promise((resolve) => {
     fs.mkdir(path, options || { recursive: true }, (err) => {
@@ -167,7 +167,11 @@ export const mkdir = async (
 export const writeFile = async (
   path: string,
   data: string | Buffer,
-  options?: { encoding?: BufferEncoding; mode?: number | string; flag?: string }
+  options?: {
+    encoding?: BufferEncoding;
+    mode?: number | string;
+    flag?: string;
+  },
 ): Promise<0 | 1> => {
   return new Promise((resolve) =>
     fs.writeFile(path, data, options || {}, (err) => {
@@ -175,7 +179,7 @@ export const writeFile = async (
         resolve(0);
       }
       resolve(1);
-    })
+    }),
   );
 };
 
@@ -186,7 +190,11 @@ export const writeFile = async (
 export const appendFile = async (
   path: string,
   data: string | Uint8Array,
-  options?: { encoding?: BufferEncoding; mode?: number | string; flag?: string }
+  options?: {
+    encoding?: BufferEncoding;
+    mode?: number | string;
+    flag?: string;
+  },
 ): Promise<0 | 1> => {
   return new Promise((resolve) =>
     fs.appendFile(path, data, options || {}, (err) => {
@@ -194,7 +202,7 @@ export const appendFile = async (
         resolve(0);
       }
       resolve(1);
-    })
+    }),
   );
 };
 
@@ -203,27 +211,27 @@ export const appendFile = async (
  */
 export const fileOn = () => {
   ipcMain.handle("file-filebysuffix", async (_, args) =>
-    fileBySuffix(args.path, args.fileName)
+    fileBySuffix(args.path, args.fileName),
   );
   ipcMain.handle("file-mkdir", async (_, args) =>
-    mkdir(args.path, args.options)
+    mkdir(args.path, args.options),
   );
   ipcMain.handle("file-deldir", async (_, args) => delDir(args.path));
   ipcMain.handle("file-unlink", async (_, args) => unlink(args.path));
   ipcMain.handle("file-access", async (_, args) => access(args.path));
   ipcMain.handle("file-rename", async (_, args) =>
-    rename(args.path, args.newPath)
+    rename(args.path, args.newPath),
   );
   ipcMain.handle("file-readfile", async (_, args) =>
-    readFile(args.path, args.options)
+    readFile(args.path, args.options),
   );
   ipcMain.handle("file-readline", async (_, args) =>
-    readLine(args.path, args.index)
+    readLine(args.path, args.index),
   );
   ipcMain.handle("file-writefile", async (_, args) =>
-    writeFile(args.path, args.data, args.options)
+    writeFile(args.path, args.data, args.options),
   );
   ipcMain.handle("file-appendfile", async (_, args) =>
-    appendFile(args.path, args.data, args.options)
+    appendFile(args.path, args.data, args.options),
   );
 };

@@ -64,7 +64,7 @@ const validateInteger = hideStackFrames(
     value: unknown,
     name: string,
     min = NumberMIN_SAFE_INTEGER,
-    max = NumberMAX_SAFE_INTEGER
+    max = NumberMAX_SAFE_INTEGER,
   ) => {
     if (typeof value !== "number")
       throw ERR_INVALID_ARG_TYPE(name, "number", value);
@@ -72,7 +72,7 @@ const validateInteger = hideStackFrames(
       throw ERR_OUT_OF_RANGE(name, "an integer", value);
     if (value < min || value > max)
       throw ERR_OUT_OF_RANGE(name, `>= ${min} && <= ${max}`, value);
-  }
+  },
 );
 
 const validateInt32 = hideStackFrames(
@@ -87,7 +87,7 @@ const validateInt32 = hideStackFrames(
     if (value < min || value > max) {
       throw ERR_OUT_OF_RANGE(name, `>= ${min} && <= ${max}`, value);
     }
-  }
+  },
 );
 
 const validateUint32 = hideStackFrames(
@@ -104,7 +104,7 @@ const validateUint32 = hideStackFrames(
     if (value < min || value > max) {
       throw ERR_OUT_OF_RANGE(name, `>= ${min} && <= ${max}`, value);
     }
-  }
+  },
 );
 
 function validateString(value: unknown, name: string) {
@@ -116,7 +116,7 @@ function validateNumber(
   value: unknown,
   name: string,
   min?: number,
-  max?: number
+  max?: number,
 ) {
   if (typeof value !== "number")
     throw ERR_INVALID_ARG_TYPE(name, "number", value);
@@ -131,7 +131,7 @@ function validateNumber(
       `${min != null ? `>= ${min}` : ""}${
         min != null && max != null ? " && " : ""
       }${max != null ? `<= ${max}` : ""}`,
-      value
+      value,
     );
   }
 }
@@ -140,14 +140,14 @@ const validateOneOf = hideStackFrames(
     if (!ArrayPrototypeIncludes(oneOf, value)) {
       const allowed = ArrayPrototypeJoin(
         ArrayPrototypeMap(oneOf, (v: any) =>
-          typeof v === "string" ? `'${v}'` : String(v)
+          typeof v === "string" ? `'${v}'` : String(v),
         ),
-        ", "
+        ", ",
       );
       const reason = "must be one of: " + allowed;
       throw ERR_INVALID_ARG_VALUE(name, value, reason);
     }
-  }
+  },
 );
 
 function validateBoolean(value: any, name: string) {
@@ -158,7 +158,7 @@ function validateBoolean(value: any, name: string) {
 function getOwnPropertyValueOrDefault(
   options: { [key: string]: any },
   key: any,
-  defaultValue: any
+  defaultValue: any,
 ) {
   return options == null || !ObjectPrototypeHasOwnProperty(options, key)
     ? defaultValue
@@ -179,12 +179,12 @@ const validateObject = hideStackFrames(
     const allowArray = getOwnPropertyValueOrDefault(
       options,
       "allowArray",
-      false
+      false,
     );
     const allowFunction = getOwnPropertyValueOrDefault(
       options,
       "allowFunction",
-      false
+      false,
     );
     const nullable = getOwnPropertyValueOrDefault(options, "nullable", false);
     if (
@@ -195,7 +195,7 @@ const validateObject = hideStackFrames(
     ) {
       throw ERR_INVALID_ARG_TYPE(name, "Object", value);
     }
-  }
+  },
 );
 
 const validateArray = hideStackFrames(
@@ -207,7 +207,7 @@ const validateArray = hideStackFrames(
       const reason = `must be longer than ${minLength}`;
       throw ERR_INVALID_ARG_VALUE(name, value, reason);
     }
-  }
+  },
 );
 
 const validateBuffer = hideStackFrames((buffer: any, name = "buffer") => {
@@ -215,7 +215,7 @@ const validateBuffer = hideStackFrames((buffer: any, name = "buffer") => {
     throw ERR_INVALID_ARG_TYPE(
       name,
       ["Buffer", "TypedArray", "DataView"],
-      buffer
+      buffer,
     );
   }
 });
@@ -228,7 +228,7 @@ function validateEncoding(data: string | any[], encoding: any) {
     throw ERR_INVALID_ARG_VALUE(
       "encoding",
       encoding,
-      `is invalid for data of length ${length}`
+      `is invalid for data of length ${length}`,
     );
   }
 }
@@ -275,7 +275,7 @@ function validateUnion(value: unknown, name: string, union: unknown[]) {
     throw ERR_INVALID_ARG_TYPE(
       name,
       `('${ArrayPrototypeJoin(union, "|")}')`,
-      value
+      value,
     );
   }
 }

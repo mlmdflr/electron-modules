@@ -63,7 +63,7 @@ export const addNumericalSeparator = (val: string) => {
 };
 
 export const hideStackFrames = (
-  fn: (value: unknown, name: string, options?: any) => void
+  fn: (value: unknown, name: string, options?: any) => void,
 ) => {
   const hidden = "__node_internal_" + fn.name;
   // @ts-ignore
@@ -74,7 +74,7 @@ export const hideStackFrames = (
 export const ERR_INVALID_ARG_VALUE = (
   name: any,
   value: any,
-  reason = "is invalid"
+  reason = "is invalid",
 ) => {
   const type = StringPrototypeIncludes(name, ".") ? "property" : "argument";
   return `The ${type} '${name}' ${reason}.`;
@@ -83,7 +83,7 @@ export const ERR_INVALID_ARG_VALUE = (
 export const ERR_INVALID_ARG_TYPE = (
   name: string,
   expected: string | string[],
-  actual: any
+  actual: any,
 ) => {
   assert(typeof name === "string", "'name' must be a string");
   if (!ArrayIsArray(expected)) {
@@ -107,7 +107,7 @@ export const ERR_INVALID_ARG_TYPE = (
   for (const value of expected) {
     assert(
       typeof value === "string",
-      "All expected entries have to be of type string"
+      "All expected entries have to be of type string",
     );
     if (ArrayPrototypeIncludes(kTypes, value)) {
       ArrayPrototypePush(types, StringPrototypeToLowerCase(value));
@@ -116,7 +116,7 @@ export const ERR_INVALID_ARG_TYPE = (
     } else {
       assert(
         value !== "object",
-        'The value "object" should be written as "Object"'
+        'The value "object" should be written as "Object"',
       );
       ArrayPrototypePush(other, value);
     }
@@ -149,7 +149,7 @@ export const ERR_INVALID_ARG_TYPE = (
       const last = ArrayPrototypePop(instances);
       msg += `an instance of ${ArrayPrototypeJoin(
         instances,
-        ", "
+        ", ",
       )}, or ${last}`;
     } else {
       msg += `an instance of ${instances[0]}`;
@@ -181,7 +181,7 @@ export const ERR_OUT_OF_RANGE = (
   str: any,
   range: unknown,
   input: number,
-  replaceDefaultBoolean = false
+  replaceDefaultBoolean = false,
 ) => {
   assert(range, 'Missing "range" argument');
   let msg = replaceDefaultBoolean

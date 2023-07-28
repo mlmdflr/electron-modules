@@ -57,7 +57,7 @@ class BlobImpl implements Blob {
         blobParts instanceof RegExp
       ) {
         throw new TypeError(
-          "Blob parts must be objects that are not Dates or RegExps"
+          "Blob parts must be objects that are not Dates or RegExps",
         );
       }
 
@@ -73,7 +73,7 @@ class BlobImpl implements Blob {
           buf = part.buffer;
         } else if (ArrayBuffer.isView(part)) {
           buf = Buffer.from(
-            new Uint8Array(part.buffer, part.byteOffset, part.byteLength)
+            new Uint8Array(part.buffer, part.byteOffset, part.byteLength),
           );
         } else {
           buf = Buffer.from(typeof part === "string" ? part : String(part));
@@ -178,7 +178,7 @@ class DigestTransform extends Transform {
   _transform(
     chunk: Buffer,
     encoding: BufferEncoding,
-    callback: TransformCallback
+    callback: TransformCallback,
   ) {
     this.digester.update(chunk);
     callback(null, chunk);
@@ -208,7 +208,7 @@ class DigestTransform extends Transform {
     if (this._actual !== this.expected) {
       throw newError(
         `${this.algorithm} checksum mismatch, expected ${this.expected}, got ${this._actual}`,
-        "ERR_CHECKSUM_MISMATCH"
+        "ERR_CHECKSUM_MISMATCH",
       );
     }
 
@@ -234,7 +234,7 @@ class ProgressCallbackTransform extends Transform {
   _transform(
     chunk: Buffer,
     encoding: BufferEncoding,
-    callback: TransformCallback
+    callback: TransformCallback,
   ) {
     const chunkLength = chunk.length;
     this.transferred += chunkLength;
@@ -250,7 +250,7 @@ class ProgressCallbackTransform extends Transform {
           transferred: this.transferred,
           percent: (this.transferred / this.total) * 100,
           bytesPerSecond: Math.round(
-            this.transferred / ((now - this.start) / 1000)
+            this.transferred / ((now - this.start) / 1000),
           ),
         });
         this.delta = 0;
@@ -270,7 +270,7 @@ class ProgressCallbackTransform extends Transform {
       transferred: totalChunk,
       percent: 100,
       bytesPerSecond: Math.round(
-        this.transferred / ((Date.now() - this.start) / 1000)
+        this.transferred / ((Date.now() - this.start) / 1000),
       ),
     });
     this.delta = 0;
@@ -295,7 +295,7 @@ class ResponseImpl implements Response {
 
     if (this.disturbed) {
       return Promise.reject(
-        new Error(`Response used already for: ${requestURL}`)
+        new Error(`Response used already for: ${requestURL}`),
       );
     }
 
@@ -336,8 +336,8 @@ class ResponseImpl implements Response {
       this.body.on("error", (err) => {
         reject(
           new Error(
-            `Invalid response body while trying to fetch ${requestURL}: ${err.message}`
-          )
+            `Invalid response body while trying to fetch ${requestURL}: ${err.message}`,
+          ),
         );
       });
 
@@ -349,7 +349,7 @@ class ResponseImpl implements Response {
         if (size && accumBytes + chunk.length > size) {
           abort = true;
           reject(
-            new Error(`Content size at ${requestURL} over limit: ${size}`)
+            new Error(`Content size at ${requestURL} over limit: ${size}`),
           );
           this.body.emit("cancel-request");
           return;
@@ -386,14 +386,14 @@ class ResponseImpl implements Response {
   public download = async (
     fileOut: Writable,
     onProgress?: ProgressCallback,
-    validateOptions?: ValidateOptions
+    validateOptions?: ValidateOptions,
   ): Promise<void> => {
     const feedStreams: Writable[] = [];
 
     if (typeof onProgress === "function") {
       const contentLength = Number(this.config.headers.get("content-length"));
       feedStreams.push(
-        new ProgressCallbackTransform(contentLength, onProgress)
+        new ProgressCallbackTransform(contentLength, onProgress),
       );
     }
 
@@ -645,7 +645,7 @@ const extractContentType = (body: unknown): string | null => {
 };
 
 const getRequestOptions = (
-  constructorOptions: RequestConstructorOptions
+  constructorOptions: RequestConstructorOptions,
 ): FinallyRequestOptions => {
   const options = {
     method: "GET",
@@ -792,7 +792,7 @@ class ElectronRequestClient implements RequestClient {
     /** Bind electron request event */
     const bindRequestEvent = (
       onFulfilled: (value: Response | PromiseLike<Response>) => void,
-      onRejected: (reason: Error) => void
+      onRejected: (reason: Error) => void,
     ) => {
       /** Set electron request timeout */
       if (timeout) {
@@ -816,8 +816,8 @@ class ElectronRequestClient implements RequestClient {
         } else {
           onRejected(
             new Error(
-              `Login event received from ${authInfo.host} but no credentials provided`
-            )
+              `Login event received from ${authInfo.host} but no credentials provided`,
+            ),
           );
         }
       });
@@ -835,7 +835,7 @@ class ElectronRequestClient implements RequestClient {
 
           if (!headers.get("location")) {
             onRejected(
-              new Error(`Redirect location header missing at: ${requestURL}`)
+              new Error(`Redirect location header missing at: ${requestURL}`),
             );
           }
 
@@ -851,7 +851,7 @@ class ElectronRequestClient implements RequestClient {
           this.redirectCount += 1;
           this.options.parsedURL = new URL(
             String(headers.get("location")),
-            parsedURL.toString()
+            parsedURL.toString(),
           );
           onFulfilled(this.send());
         }
@@ -870,7 +870,7 @@ class ElectronRequestClient implements RequestClient {
             statusCode,
             headers,
             size,
-          })
+          }),
         );
       });
     };
@@ -898,7 +898,7 @@ class Request {
 
 export const request = (
   requestURL: string,
-  options: NetOptions = {}
+  options: NetOptions = {},
 ): Promise<Response> => {
   const request = new Request({ requestURL, ...options });
   return request.send();

@@ -3,11 +3,11 @@ export interface Ipc {
   sendSync: (channel: string, args?: any) => any;
   on: (
     channel: string,
-    listener: (event: Electron.IpcRendererEvent, ...args: any[]) => void
+    listener: (event: Electron.IpcRendererEvent, ...args: any[]) => void,
   ) => void;
   once: (
     channel: string,
-    listener: (event: Electron.IpcRendererEvent, ...args: any[]) => void
+    listener: (event: Electron.IpcRendererEvent, ...args: any[]) => void,
   ) => void;
   invoke: (channel: string, args?: any) => Promise<any>;
   removeAllListeners: (channel: string) => this;

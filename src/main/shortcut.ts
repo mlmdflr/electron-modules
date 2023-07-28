@@ -122,7 +122,7 @@ class Shortcut {
           callback: () => windowInstance.send(`shortcut-back`, args.key),
         };
         return this.register(accelerator);
-      }
+      },
     );
     ipcMain.handle("shortcut-unregister", (_, args) => this.unregister(args));
     ipcMain.handle("shortcut-unregisterAll", () => this.unregisterAll());

@@ -7,7 +7,7 @@ import type { treatedBytes } from "../comm/utils.inside";
  */
 export const sessionHeadersSet = (
   urlHeaders: { [key: string]: { [key: string]: string } },
-  partition: string = "default"
+  partition: string = "default",
 ) => window.ipc.send(`session-headers-set-${partition}`, urlHeaders);
 
 /**
@@ -15,7 +15,7 @@ export const sessionHeadersSet = (
  */
 export const sessionCookiesGet = (
   cookiesGetFilter: CookiesGetFilter,
-  partition: string = "default"
+  partition: string = "default",
 ): Promise<Cookie[]> =>
   window.ipc.invoke(`session-cookies-get-${partition}`, cookiesGetFilter);
 
@@ -24,7 +24,7 @@ export const sessionCookiesGet = (
  */
 export const sessionCookiesSet = (
   cookiesGetFilter: CookiesSetDetails,
-  partition: string = "default"
+  partition: string = "default",
 ): Promise<void> =>
   window.ipc.invoke(`session-cookies-set-${partition}`, cookiesGetFilter);
 
@@ -34,7 +34,7 @@ export const sessionCookiesSet = (
 export const sessionCookiesRemove = (
   url: string,
   name: string,
-  partition: string = "default"
+  partition: string = "default",
 ): Promise<void> =>
   window.ipc.invoke(`session-cookies-remove-${partition}`, { url, name });
 
@@ -42,7 +42,7 @@ export const sessionCookiesRemove = (
  * 获取缓存大小
  */
 export const sessionCacheSize = (
-  partition: string = "default"
+  partition: string = "default",
 ): Promise<treatedBytes> =>
   window.ipc.invoke(`session-cache-size-${partition}`);
 
@@ -50,5 +50,5 @@ export const sessionCacheSize = (
  * 清除缓存
  */
 export const sessionCacheClear = (
-  partition: string = "default"
+  partition: string = "default",
 ): Promise<void> => window.ipc.invoke(`session-cache-clear-${partition}`);

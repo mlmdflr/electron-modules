@@ -4,7 +4,7 @@ import type { UpdateMessage } from "../types";
  * 更新监听
  */
 export const updateOn = (
-  listener: (event: IpcRendererEvent, args: UpdateMessage) => void
+  listener: (event: IpcRendererEvent, args: UpdateMessage) => void,
 ) => window.ipc.on("update-back", listener);
 
 /**
@@ -20,7 +20,7 @@ export const updateListenersRemove = () =>
  */
 export const updateCheck = (
   isDel: boolean = true,
-  autoDownload: boolean = false
+  autoDownload: boolean = false,
 ) => window.ipc.send("update-check", { isDel, autoDownload });
 
 /**

@@ -47,7 +47,7 @@ const normalizeString = (
     (code: number): boolean;
     (code: number): boolean;
     (arg0: number): any;
-  }
+  },
 ) => {
   let res = "";
   let lastSegmentLength = 0;
@@ -218,7 +218,7 @@ const win32: PlatformPath = {
                 device = `\\\\${firstPart}\\${StringPrototypeSlice(
                   path,
                   last,
-                  j
+                  j,
                 )}`;
                 rootEnd = j;
               }
@@ -260,7 +260,7 @@ const win32: PlatformPath = {
       } else {
         resolvedTail = `${StringPrototypeSlice(
           path,
-          rootEnd
+          rootEnd,
         )}\\${resolvedTail}`;
         resolvedAbsolute = isAbsolute;
         if (isAbsolute && resolvedDevice.length > 0) {
@@ -277,7 +277,7 @@ const win32: PlatformPath = {
       resolvedTail,
       !resolvedAbsolute,
       "\\",
-      isPathSeparator
+      isPathSeparator,
     );
 
     return resolvedAbsolute
@@ -353,7 +353,7 @@ const win32: PlatformPath = {
               device = `\\\\${firstPart}\\${StringPrototypeSlice(
                 path,
                 last,
-                j
+                j,
               )}`;
               rootEnd = j;
             }
@@ -383,7 +383,7 @@ const win32: PlatformPath = {
             StringPrototypeSlice(path, rootEnd),
             !isAbsolute,
             "\\",
-            isPathSeparator
+            isPathSeparator,
           )
         : "";
     if (tail.length === 0 && !isAbsolute) tail = ".";
@@ -1099,7 +1099,7 @@ const posix: PlatformPath = {
       resolvedPath,
       !resolvedAbsolute,
       "/",
-      isPosixPathSeparator
+      isPosixPathSeparator,
     );
 
     if (resolvedAbsolute) {

@@ -44,13 +44,13 @@ export class Session {
       },
       (details, callback) => {
         const keys = Object.keys(this.urlHeaders).filter((key: string) =>
-          [0, 7, 8].includes(details.url.indexOf(key))
+          [0, 7, 8].includes(details.url.indexOf(key)),
         );
         for (const key of keys)
           for (const v in this.urlHeaders[key])
             details.requestHeaders[v] = this.urlHeaders[key][v];
         callback({ requestHeaders: details.requestHeaders });
-      }
+      },
     );
   };
 
@@ -112,27 +112,27 @@ export class Session {
     });
     //设置 Cookies
     ipcMain.handle(`session-cookies-set-${this.#partition}`, (_, args) =>
-      this.setCookies(args)
+      this.setCookies(args),
     );
     //获取 Cookies
     ipcMain.handle(`session-cookies-get-${this.#partition}`, (_, args) =>
-      this.getCookies(args)
+      this.getCookies(args),
     );
     //移除 Cookies
     ipcMain.handle(`session-cookies-remove-${this.#partition}`, (_, args) =>
-      this.removeCookies(args.url, args.name)
+      this.removeCookies(args.url, args.name),
     );
     //获取缓存大小
     ipcMain.handle(`session-cache-size-${this.#partition}`, () =>
-      this.getCacheSize()
+      this.getCacheSize(),
     );
     //清除缓存
     ipcMain.handle(`session-cache-clear-${this.#partition}`, () =>
-      this.clearCache()
+      this.clearCache(),
     );
     //获取会话保存路径
     ipcMain.handle(`session-storage-path-${this.#partition}`, () =>
-      this.getStoragePath()
+      this.getStoragePath(),
     );
   };
 }

@@ -9,7 +9,7 @@ import type { Customize_View } from "../types";
 //视图消息监听
 export const viewMessageOn = (
   channel: string,
-  listener: (event: IpcRendererEvent, args: any) => void
+  listener: (event: IpcRendererEvent, args: any) => void,
 ) => window.ipc.on(`view-message-${channel}-back`, listener);
 
 //关闭视图消息监听
@@ -27,7 +27,7 @@ export const viewMessageSend = (
   channel: string, //监听key（保证唯一）
   value: any, //需要发送的内容
   isback: boolean = false, //是否给自身反馈
-  acceptIds: number[] = [] //指定视图id发送
+  acceptIds: number[] = [], //指定视图id发送
 ) =>
   window.ipc.send("view-message-send", {
     channel,
@@ -45,7 +45,7 @@ export const viewMessageSend = (
 export const viewMessageSendAll = (
   channel: string,
   value: any,
-  isback: boolean = false
+  isback: boolean = false,
 ) =>
   window.ipc.send("view-message-send-all", {
     channel,
@@ -56,7 +56,7 @@ export const viewMessageSendAll = (
 //创建视图
 export const viewCreate = (
   customize: Customize_View,
-  opt?: WebPreferences
+  opt?: WebPreferences,
 ): Promise<number> => window.ipc.invoke("view-new", { customize, opt });
 
 //新建并绑定
@@ -64,7 +64,7 @@ export const viewCreateBind = (
   wid: number | bigint,
   customize: Customize_View,
   bounds?: Rectangle,
-  opt?: WebPreferences
+  opt?: WebPreferences,
 ): Promise<number> =>
   window.ipc.invoke("view-create-bind", { wid, customize, opt, bounds });
 
@@ -72,7 +72,7 @@ export const viewCreateBind = (
 export const viewBind = (
   wid: number | bigint,
   id: number,
-  bounds?: Rectangle
+  bounds?: Rectangle,
 ): Promise<void> => window.ipc.invoke("view-bind", { wid, id, bounds });
 
 //视图销毁
@@ -83,17 +83,17 @@ export const viewDestroy = (id: number): Promise<boolean> =>
 export const viewUnBind = (
   wid: number | bigint | undefined,
   id: number,
-  del?: boolean
+  del?: boolean,
 ): Promise<void> => window.ipc.invoke("view-un-bind", { wid, id, del });
 
 // 设置视图bounds
 export const viewSetBounds = (
   id: number = window.customize.id as number,
-  bounds: Rectangle
+  bounds: Rectangle,
 ): Promise<void> => window.ipc.invoke("view-set-bounds", { id, bounds });
 
 //设置自动调整
 export const viewSetAutoResize = (
   id: number = window.customize.id as number,
-  autoResize: AutoResizeOptions
+  autoResize: AutoResizeOptions,
 ) => window.ipc.send("view-set-auto-resize", { id, autoResize });

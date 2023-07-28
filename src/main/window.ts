@@ -37,7 +37,7 @@ declare global {
  */
 function browserWindowAssembly(
   customize: Customize,
-  bwOptions: BrowserWindowConstructorOptions = {}
+  bwOptions: BrowserWindowConstructorOptions = {},
 ) {
   if (!customize) throw new Error("not customize");
   //重置主窗体
@@ -74,7 +74,7 @@ function browserWindowAssembly(
       devTools: !app.isPackaged,
       webSecurity: false,
     },
-    bwOptions.webPreferences
+    bwOptions.webPreferences,
   );
   let bwOpt: BrowserWindowConstructorOptions = Object.assign(
     {
@@ -85,7 +85,7 @@ function browserWindowAssembly(
       frame: bwOptions.frame === undefined ? !isLocal : bwOptions.frame,
       show: bwOptions.show === undefined ? !isLocal : bwOptions.show,
     },
-    bwOptions
+    bwOptions,
   );
   let parenWin: BrowserWindow | null = null;
   customize.parentId !== null &&
@@ -128,7 +128,7 @@ function browserWindowAssembly(
 export function windowOpenHandler(
   webContents: WebContents,
   bwOpt: BrowserWindowConstructorOptions,
-  parentId?: number
+  parentId?: number,
 ) {
   webContents.setWindowOpenHandler(
     ({ url, frameName, features, disposition, referrer, postBody }) => {
@@ -158,11 +158,11 @@ export function windowOpenHandler(
             nodeIntegration: false,
             session: webContents.session,
           },
-        })
+        }),
       );
       winId !== undefined && windowInstance.get(winId)?.setMenu(null);
       return { action: "deny" };
-    }
+    },
   );
 }
 
@@ -172,19 +172,19 @@ export function windowOpenHandler(
 function load(
   url: string,
   win: BrowserWindow,
-  bwOpt: BrowserWindowConstructorOptions
+  bwOpt: BrowserWindowConstructorOptions,
 ) {
   // 窗口内创建拦截
   windowInstance.defaultExtraOptions.isSetWindowOpenHandler &&
     windowOpenHandler(win.webContents, bwOpt, win.id);
   windowInstance.defaultExtraOptions.isSetWindowOpenHandler &&
     win.webContents.on("did-attach-webview", (_, webContents) =>
-      windowOpenHandler(webContents, bwOpt, win.id)
+      windowOpenHandler(webContents, bwOpt, win.id),
     );
   // 窗口usb插拔消息监听
   process.platform === "win32" &&
     win.hookWindowMessage(0x0219, (wParam, lParam) =>
-      win.webContents.send("window-hook-message-0x0219", { wParam, lParam })
+      win.webContents.send("window-hook-message-0x0219", { wParam, lParam }),
     );
   win.webContents.on("did-finish-load", () => {
     if ("route" in win.customize)
@@ -193,10 +193,10 @@ function load(
   });
   // 窗口最大最小监听
   win.on("maximize", () =>
-    win.webContents.send("window-maximize-status", "maximize")
+    win.webContents.send("window-maximize-status", "maximize"),
   );
   win.on("unmaximize", () =>
-    win.webContents.send("window-maximize-status", "unmaximize")
+    win.webContents.send("window-maximize-status", "unmaximize"),
   );
   // 聚焦失焦监听
   win.on("blur", () => win.webContents.send("window-blur-focus", "blur"));
@@ -232,7 +232,7 @@ export class Window {
   // 默认路由预加载路径
   public defaultRoutePreload: string = join(
     __dirname,
-    "../preload/index.route.js"
+    "../preload/index.route.js",
   );
 
   // 默认url预加载路径
@@ -262,7 +262,7 @@ export class Window {
     cfg.defaultExtraOptions &&
       (this.defaultExtraOptions = Object.assign(
         this.defaultExtraOptions,
-        cfg.defaultExtraOptions
+        cfg.defaultExtraOptions,
       ));
   };
 
@@ -315,7 +315,7 @@ export class Window {
    * */
   create = (
     customize: Customize,
-    bwOptions: BrowserWindowConstructorOptions = {}
+    bwOptions: BrowserWindowConstructorOptions = {},
   ): number | bigint => {
     if ("route" in customize && !customize.isOpenMultiWindow) {
       for (const i of this.getAll()) {
@@ -332,7 +332,7 @@ export class Window {
     }
     const { bwOpt, isParentId, parenWin } = browserWindowAssembly(
       customize,
-      bwOptions
+      bwOptions,
     );
     /**
      * @description 设置id时如果已经有了则是默认雪花算法生成
@@ -354,7 +354,7 @@ export class Window {
         win.setEnabled(false);
         setTimeout(
           () => win.setEnabled(true),
-          this.defaultExtraOptions.win32HookMsg278Delay
+          this.defaultExtraOptions.win32HookMsg278Delay,
         );
       });
 
@@ -379,21 +379,21 @@ export class Window {
       if (pwin) {
         pwin.webContents
           .insertCSS(
-            `html{filter:blur(${this.defaultExtraOptions.modalWindowParentBlu}px);}`
+            `html{filter:blur(${this.defaultExtraOptions.modalWindowParentBlu}px);}`,
           )
           .then((key) =>
             windowInstance.#insertCSSMap.set(
               `${win.getParentWindow()?.customize.id ?? "default"}`,
-              key
-            )
+              key,
+            ),
           );
         for (const bv of pwin.getBrowserViews())
           bv.webContents
             ?.insertCSS(
-              `html{filter:blur(${this.defaultExtraOptions.modalWindowParentBlu}px);}`
+              `html{filter:blur(${this.defaultExtraOptions.modalWindowParentBlu}px);}`,
             )
             .then((key) =>
-              windowInstance.#insertCSSMap.set(`v${bv.customize.id}`, key)
+              windowInstance.#insertCSSMap.set(`v${bv.customize.id}`, key),
             );
       }
     }
@@ -554,7 +554,7 @@ export class Window {
     });
     // 窗口消息
     ipcMain.on("window-func", (event, args) =>
-      this.func(args.type, args.id, args.data)
+      this.func(args.type, args.id, args.data),
     );
     //窗口消息-关闭(内置为主窗体关闭则全部退出)
     ipcMain.on("window-close", (event, args) => {
@@ -566,18 +566,18 @@ export class Window {
         if (win.isModal() && win.customize.parentId) {
           let parentWin = this.get(win.customize.parentId),
             mapValue = windowInstance.#insertCSSMap.get(
-              `${parentWin?.customize.id ?? "default"}`
+              `${parentWin?.customize.id ?? "default"}`,
             ),
             vMapGet = (key: string) =>
               windowInstance.#insertCSSMap.get(
-                key === "vundefined" ? "default" : key
+                key === "vundefined" ? "default" : key,
               ) as string;
           if (parentWin && mapValue) {
             parentWin.webContents.removeInsertedCSS(mapValue);
             for (const bv of parentWin.getBrowserViews())
               vMapGet(`v${bv.customize.id}`) &&
                 bv.webContents?.removeInsertedCSS(
-                  vMapGet(`v${bv.customize.id}`)
+                  vMapGet(`v${bv.customize.id}`),
                 );
           }
         }
@@ -586,15 +586,15 @@ export class Window {
     });
     // 窗口状态
     ipcMain.handle("window-status", async (event, args) =>
-      this.getStatus(args.type, args.id)
+      this.getStatus(args.type, args.id),
     );
     // 创建窗口
     ipcMain.handle("window-new", (event, args) =>
-      this.create(args.customize, args.opt)
+      this.create(args.customize, args.opt),
     );
     // 设置窗口是否置顶
     ipcMain.on("window-always-top-set", (event, args) =>
-      this.setAlwaysOnTop(args)
+      this.setAlwaysOnTop(args),
     );
     // 设置窗口大小
     ipcMain.on("window-size-set", (event, args) => this.setSize(args));
@@ -604,7 +604,7 @@ export class Window {
     ipcMain.on("window-max-size-set", (event, args) => this.setMaxSize(args));
     // 设置窗口背景颜色
     ipcMain.on("window-bg-color-set", (event, args) =>
-      this.setBackgroundColor(args)
+      this.setBackgroundColor(args),
     );
     // 窗口消息
     ipcMain.on("window-message-send", (event, args) => {
@@ -623,7 +623,7 @@ export class Window {
       return this.getAll()
         .filter((win) => win.customize && "route" in win.customize)
         .filter((win) =>
-          args ? (win.customize as Customize_Route).route === args : true
+          args ? (win.customize as Customize_Route).route === args : true,
         )
         .map((win) => win.customize.id);
     });

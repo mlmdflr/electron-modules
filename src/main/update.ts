@@ -20,7 +20,7 @@ export class Update {
   constructor(
     options: AllPublishOptions,
     defaultConfigPath: string,
-    dirname: string
+    dirname: string,
   ) {
     this.options = options;
     this.dirname = dirname;
@@ -53,7 +53,7 @@ export class Update {
       // @ts-ignore
       this.autoUpdater.app.baseCachePath,
       this.dirname,
-      "pending"
+      "pending",
     );
     try {
       delDir(updatePendingPath);
@@ -74,11 +74,11 @@ export class Update {
     };
     this.autoUpdater.on("error", () => callback(message.error));
     this.autoUpdater.on("checking-for-update", () =>
-      callback(message.checking)
+      callback(message.checking),
     );
     this.autoUpdater.on("update-available", () => callback(message.updateAva));
     this.autoUpdater.on("update-not-available", () =>
-      callback(message.updateNotAva)
+      callback(message.updateNotAva),
     );
     // 更新下载进度事件
     this.autoUpdater.on("download-progress", (progressObj) => {
@@ -87,7 +87,7 @@ export class Update {
     });
     // 下载完成事件
     this.autoUpdater.on("update-downloaded", () =>
-      callback(message.updateDownload)
+      callback(message.updateDownload),
     );
   };
 
@@ -100,7 +100,7 @@ export class Update {
   checkUpdate = (
     isDel: boolean,
     autoDownload: boolean = false,
-    url?: string
+    url?: string,
   ) => {
     if (isDel) this.handleUpdate();
     url && this.autoUpdater.setFeedURL(url);
@@ -129,17 +129,17 @@ export class Update {
   on = () => {
     //开启更新监听
     this.open((data: { key: string; value: any }) =>
-      windowInstance.send("update-back", data)
+      windowInstance.send("update-back", data),
     );
     //检查更新
     ipcMain.on("update-check", (event, args) =>
-      this.checkUpdate(args.isDel, args.autoDownload, args.url)
+      this.checkUpdate(args.isDel, args.autoDownload, args.url),
     );
     //手动下载更新
     ipcMain.on("update-download", (event, args) => this.downloadUpdate());
     // 关闭程序安装新的软件 isSilent 是否静默更新
     ipcMain.on("update-install", (event, isSilent) =>
-      this.updateQuitInstall(isSilent)
+      this.updateQuitInstall(isSilent),
     );
   };
 }

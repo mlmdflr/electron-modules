@@ -21,7 +21,7 @@ class Tray {
   create = (
     trayImgPath: string,
     toolTip: string = app.name,
-    temp?: (Electron.MenuItemConstructorOptions | Electron.MenuItem)[]
+    temp?: (Electron.MenuItemConstructorOptions | Electron.MenuItem)[],
   ) => {
     this.main && this.main.destroy();
     let contextMenu = Menu.buildFromTemplate([
@@ -48,7 +48,7 @@ class Tray {
   changeFrom = (
     temp: (Electron.MenuItemConstructorOptions | Electron.MenuItem)[],
     toolTip?: string,
-    trayImgPath?: string
+    trayImgPath?: string,
   ) => {
     if (!this.main) {
       throw new Error(`Tray not created`);

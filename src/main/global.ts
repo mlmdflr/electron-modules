@@ -42,7 +42,7 @@ class Global {
         try {
           const cfg = (await readFile(
             c.path,
-            c.opt || { encoding: "utf-8" }
+            c.opt || { encoding: "utf-8" },
           )) as any;
           if (cfg) this.sendGlobal(c.seat, c.parse ? JSON.parse(cfg) : cfg);
         } catch (e) {
@@ -53,7 +53,7 @@ class Global {
       try {
         const cfg = (await readFile(
           conf.path,
-          conf.opt || { encoding: "utf-8" }
+          conf.opt || { encoding: "utf-8" },
         )) as any;
         if (cfg) this.sendGlobal(conf.seat, conf.parse ? JSON.parse(cfg) : cfg);
       } catch (e) {
@@ -105,7 +105,7 @@ class Global {
   sendGlobal = <Value>(
     key: string,
     value: Value,
-    exists: boolean = false
+    exists: boolean = false,
   ): void => {
     if (key === "") {
       console.error("Invalid key, the key can not be a empty string");
@@ -131,7 +131,7 @@ class Global {
         cur = cur[level];
       } else {
         console.error(
-          `Cannot set value because the key ${key} is not exists on obj.`
+          `Cannot set value because the key ${key} is not exists on obj.`,
         );
         return;
       }
@@ -139,7 +139,7 @@ class Global {
 
     if (typeof cur !== "object") {
       console.error(
-        `Invalid key ${key} because the value of this key is not a object.`
+        `Invalid key ${key} because the value of this key is not a object.`,
       );
       return;
     }

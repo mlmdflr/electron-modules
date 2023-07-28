@@ -46,7 +46,7 @@ export const rename = (path: string, newPath: string) =>
  */
 export const readFile = (
   path: string,
-  options?: { encoding?: BufferEncoding; flag?: string }
+  options?: { encoding?: BufferEncoding; flag?: string },
 ) => window.ipc.invoke("file-readfile", { path, options });
 
 /**
@@ -56,7 +56,7 @@ export const readFile = (
  */
 export const readLine = (
   path: string,
-  index?: number
+  index?: number,
 ): Promise<string | any[]> =>
   window.ipc.invoke("file-readline", { path, index });
 /**
@@ -66,7 +66,11 @@ export const readLine = (
 export const writeFile = (
   path: string,
   data: string | Buffer,
-  options?: { encoding?: BufferEncoding; mode?: number | string; flag?: string }
+  options?: {
+    encoding?: BufferEncoding;
+    mode?: number | string;
+    flag?: string;
+  },
 ) => window.ipc.invoke("file-writefile", { path, data, options });
 
 /**
@@ -76,5 +80,9 @@ export const writeFile = (
 export const appendFile = (
   path: string,
   data: string | Uint8Array,
-  options?: { encoding?: BufferEncoding; mode?: number | string; flag?: string }
+  options?: {
+    encoding?: BufferEncoding;
+    mode?: number | string;
+    flag?: string;
+  },
 ) => window.ipc.invoke("file-appendfile", { path, data, options });

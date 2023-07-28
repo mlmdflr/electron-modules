@@ -13,6 +13,6 @@ export const clipboardReadText = (type?: ClipboardType): Promise<string> =>
  */
 export const clipboardWriteText = (
   text: string,
-  type?: ClipboardType
+  type?: ClipboardType,
 ): Promise<void> =>
   window.ipc.invoke("app-clipboard-write-text", { text, type });

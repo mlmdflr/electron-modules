@@ -7,8 +7,8 @@ import type { Customize_Route, Customize_View_Route } from "../types";
 export const LoadRoute = (
   listener: (
     event: IpcRendererEvent,
-    args: Customize_Route | Customize_View_Route
-  ) => void
+    args: Customize_Route | Customize_View_Route,
+  ) => void,
 ) => window.ipc.on(`load-route`, listener);
 
 /**
@@ -25,7 +25,7 @@ export const customizeUpdate = () => {
  */
 export const windowSetBackgroundColor = (
   id: number | bigint = window.customize.id as number | bigint,
-  color?: string
+  color?: string,
 ) => {
   if ("session" in window.customize)
     typeof id === "number" &&

@@ -23,11 +23,11 @@ declare global {
 function load(
   url: string,
   view: BrowserView,
-  bvOptions: BrowserViewConstructorOptions
+  bvOptions: BrowserViewConstructorOptions,
 ) {
   windowOpenHandler(view.webContents, bvOptions);
   view.webContents.on("did-attach-webview", (_, webContents) =>
-    windowOpenHandler(webContents, bvOptions)
+    windowOpenHandler(webContents, bvOptions),
   );
   // 注入初始化代码
   view.webContents.on("did-finish-load", () => {
@@ -63,7 +63,7 @@ class View {
 
   private browserViewAssembly = (
     customize: Customize_View,
-    bvOptions: BrowserViewConstructorOptions = {}
+    bvOptions: BrowserViewConstructorOptions = {},
   ) => {
     if (!customize) throw new Error("not customize");
     if (!customize.session) throw new Error("not customize session");
@@ -91,7 +91,7 @@ class View {
           ? session.defaultSession
           : session.fromPartition(sesKey, { cache: sesCache }),
       },
-      bvOptions.webPreferences
+      bvOptions.webPreferences,
     );
     const view = new BrowserView(bvOptions);
     customize.id = view.webContents.id;
@@ -166,7 +166,7 @@ class View {
   bindBV = (win: BrowserWindow, view: BrowserView, bounds: Rectangle) => {
     this.unBindBV(win, view);
     let err = new Error(
-      `this BrowserWindow cannot bind,please check window customize`
+      `this BrowserWindow cannot bind,please check window customize`,
     );
     if (win.customize) {
       win.addBrowserView(view);
@@ -181,7 +181,7 @@ class View {
     winId: bigint | number,
     customize: Customize_View,
     opt: WebPreferences,
-    bounds: Rectangle
+    bounds: Rectangle,
   ) => {
     let win = windowInstance.get(winId);
     if (!win) throw Error("Invalid id, the id can not be a empty");
@@ -193,7 +193,7 @@ class View {
   on() {
     //创建视图
     ipcMain.handle("view-new", (_, args) =>
-      this.create(args.customize, args.opt)
+      this.create(args.customize, args.opt),
     );
 
     //视图绑定
@@ -225,12 +225,12 @@ class View {
 
     //设置 bounds
     ipcMain.handle("view-set-bounds", (_, args) =>
-      this.setBounds(args.id, args.bounds)
+      this.setBounds(args.id, args.bounds),
     );
 
     //创建并绑定
     ipcMain.handle("view-create-bind", (_, args) =>
-      this.createBindBV(args.wid, args.customize, args.opt, args.bounds)
+      this.createBindBV(args.wid, args.customize, args.opt, args.bounds),
     );
 
     //view数据更新
@@ -244,12 +244,12 @@ class View {
 
     //设置背景颜色
     ipcMain.on("view-bg-color-set", (_, args) =>
-      this.setBackgroundColor(args.id, args.color)
+      this.setBackgroundColor(args.id, args.color),
     );
 
     //设置是否自动调整大小
     ipcMain.on("view-set-auto-resize", (_, args) =>
-      this.setAutoResize(args.id, args.autoResize)
+      this.setAutoResize(args.id, args.autoResize),
     );
 
     //view消息(指定发送)
@@ -261,7 +261,7 @@ class View {
           if (view && i !== `${originId}`)
             view.webContents.send(
               `view-message-${args.channel}-back`,
-              args.value
+              args.value,
             );
         }
       }
@@ -270,7 +270,7 @@ class View {
         if (view)
           view.webContents.send(
             `view-message-${args.channel}-back`,
-            args.value
+            args.value,
           );
       }
     });
@@ -282,14 +282,14 @@ class View {
         if (key !== `${originId}`)
           value.webContents.send(
             `window-message-${args.channel}-back`,
-            args.value
+            args.value,
           );
       if (args.isback) {
         let view = this.#view_map.get(`${originId}`);
         if (view)
           view.webContents.send(
             `view-message-${args.channel}-back`,
-            args.value
+            args.value,
           );
       }
     });
