@@ -1,11 +1,11 @@
 {
   "name": "@mlmdflr/electron-modules",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "electron modules",
   "license": "MIT",
   "scripts": {
     "b_publish": "npm run build && cd dist && npm publish --registry registry.npmjs.org --access=public && cd ..",
-    "build": "npm run fix:prettier && rollup -c rollup.config.js --bundleConfigAsCjs && node build.js",
+    "build": "npm run fix:prettier && rollup -c rollup.config.js && node build.js",
     "fix:prettier": "prettier \"./src\" --write",
     "test": "npx electron ./examples/main.js"
   },
@@ -31,12 +31,13 @@
     "@rollup/plugin-commonjs": "^25.0.3",
     "@rollup/plugin-json": "^6.0.0",
     "@rollup/plugin-node-resolve": "^15.1.0",
+    "@rollup/plugin-terser": "^0.4.3",
     "electron": "^25.3.2",
     "electron-updater": "^6.1.1",
     "prettier": "^3.0.0",
-    "rollup": "^3.26.3",
-    "rollup-plugin-terser": "^7.0.2",
+    "rollup": "^3.27.0",
     "rollup-plugin-typescript2": "^0.35.0",
+    "tslib": "^2.6.1",
     "typescript": "^5.1.6"
   }
 }

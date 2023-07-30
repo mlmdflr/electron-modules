@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "declarationDir": "./dist",
-    "incremental": true,
+    "incremental": false,
     "moduleResolution": "node",
     "inlineSourceMap": true,
     "esModuleInterop": true,

@@ -1,16 +1,17 @@
-import { readdirSync, statSync } from "fs";
-import { resolve, extname } from "path";
-import { builtinModules } from "module";
-import { terser } from "rollup-plugin-terser";
-import commonjs from "@rollup/plugin-commonjs";
-import nodeResolve from "@rollup/plugin-node-resolve";
-import json from "@rollup/plugin-json";
-import typescript from "rollup-plugin-typescript2";
+const { readdirSync, statSync } = require("fs")
+const { resolve, extname } = require("path")
+const { builtinModules } = require("module")
+const terser = require("@rollup/plugin-terser")
+const commonjs = require("@rollup/plugin-commonjs")
+const nodeResolve = require("@rollup/plugin-node-resolve")
+const json = require("@rollup/plugin-json")
+const typescript = require("rollup-plugin-typescript2")
 
 const plugins = () => [
   json(),
   commonjs(),
   typescript({
+    tsconfig: "./tsconfig.json",
     useTsconfigDeclarationDir: true,
     preferBuiltins: true,
     browser: false,
@@ -19,7 +20,7 @@ const plugins = () => [
   nodeResolve({
     preferBuiltins: true,
   }),
-  terser(),
+  terser()
 ];
 
 const external = [
@@ -110,5 +111,4 @@ flies.forEach((path) => {
   });
 });
 
-
-export default config;
+exports.default = config
