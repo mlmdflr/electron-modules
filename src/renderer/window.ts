@@ -141,8 +141,7 @@ export const windowIdRoute = (route?: string): Promise<[]> =>
 //查询窗体绑定的所有视图
 export const windowViewIdAll = (
   id: number | bigint = window.customize.id as number | bigint,
-): Promise<number | number[]> =>
-  window.ipc.invoke("windows-view-id-all", { id });
+): Promise<number[]> => window.ipc.invoke("windows-view-id-all", { id });
 
 //window native hook message
 export const windowHookMessageOn = (
