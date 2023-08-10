@@ -635,6 +635,18 @@ class HeadersImpl {
   public delete = (key: string) => {
     this.map.delete(sanitizeKey(key));
   };
+
+  public getSetCookie = () => {
+    if (this.map.has(sanitizeKey("set-cookie"))) {
+      const value = this.map.get(sanitizeKey("set-cookie"));
+      if (typeof value === "string") {
+        return [value];
+      } else if (Array.isArray(value)) {
+        return value;
+      }
+    }
+    return [];
+  };
 }
 
 const extractContentType = (body: unknown): string | null => {
@@ -673,6 +685,7 @@ const getRequestOptions = (
     for (const [queryKey, queryValue] of Object.entries(query))
       parsedURL.searchParams.append(queryKey, queryValue);
   const headers = new HeadersImpl(headerOptions);
+
   // User cannot set content-length themself as per fetch spec
   headers.delete("content-length");
   // Add compression header
@@ -828,6 +841,7 @@ class ElectronRequestClient implements RequestClient {
 
         const { statusCode = 200, headers: responseHeaders } = res;
         const headers = new HeadersImpl(responseHeaders);
+
         if (isRedirect(statusCode) && followRedirect) {
           if (maxRedirectCount && this.redirectCount >= maxRedirectCount) {
             onRejected(new Error(`Maximum redirect reached at: ${requestURL}`));

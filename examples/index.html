@@ -1,32 +1,12 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-<body style="background-color: #222;color: #fff;">
-  <script>
-    //@ts-ignore
-    BigInt.prototype.toJSON = function () {return this.toString()}
-    window.ipc.once("load-route", (_, args) => {
-      window.customize = args;
-      document.body.innerHTML += `<div style="-webkit-app-region: drag;">
-        <h1>hello electron</h1>
-        <div>environment: <br/>${JSON.stringify(window.environment)}</div>
-        <br/>
-        <div>customize: <br/>${JSON.stringify(window.customize)}</div>
-        <button style="-webkit-app-region: no-drag;" onclick="window.ipc.send('window-close',${window.customize.id}n)">关闭</button>
-        <button style="-webkit-app-region: no-drag;" onclick="window.ipc.send('new-model-window',${window.customize.id}n)">模态框</button>
-        <button style="-webkit-app-region: no-drag;" onclick="window.open('https://github.com/mlmdflr')">window.open</button>
-        The following is BrowserView
-        </div> `;
-      setTimeout(
-        () =>
-          window.ipc.send("window-func", {
-            type: "show",
-            id: window.customize.id,
-          }),
-        200
-      );
-    });
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>demo</title>
+  </head>
 
-  </script>
-</body>
-
+  <body style="background-color: #222; color: #fff">
+    <script src="./bundle.js"></script>
+  </body>
 </html>

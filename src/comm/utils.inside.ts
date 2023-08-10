@@ -1,3 +1,23 @@
+export function queryParams(data: any): string {
+  let _result = [];
+  for (let key in data) {
+    let value = data[key];
+    if (["", undefined, null].includes(value)) {
+      continue;
+    }
+    if (value.constructor === Array) {
+      value.forEach((_value) => {
+        _result.push(
+          encodeURIComponent(key) + "[]=" + encodeURIComponent(_value),
+        );
+      });
+    } else {
+      _result.push(encodeURIComponent(key) + "=" + encodeURIComponent(value));
+    }
+  }
+  return _result.length ? _result.join("&") : "";
+}
+
 export class Snowflake {
   private static twepoch = 1658110470937n;
 
