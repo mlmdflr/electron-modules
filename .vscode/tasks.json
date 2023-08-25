@@ -1,0 +1,12 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "npm",
+			"script": "test:web",
+			"problemMatcher": [],
+			"label": "npm: test:web",
+			"detail": "rollup -c ${workspaceFolder}/examples/rollup.config.js"
+		}
+	]
+}

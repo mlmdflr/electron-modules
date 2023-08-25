@@ -36,7 +36,11 @@ function load(
     else view.webContents.send(`load-url`, view.customize);
   });
   //页面加载
-  if (url.startsWith("https://") || url.startsWith("http://"))
+  if (
+    url.startsWith("https://") ||
+    url.startsWith("http://") ||
+    url.startsWith("file:///")
+  )
     view.webContents
       .loadURL(url, view.customize.loadOptions as LoadURLOptions)
       .catch(logError);
@@ -115,7 +119,18 @@ class View {
     !app.isPackaged && view.webContents.openDevTools({ mode: "detach" });
     if ("route" in view.customize)
       return load(windowInstance.defaultLoadUrl, view, bvOptions);
-    else return load(view.customize.url, view, bvOptions);
+    else {
+      if (
+        !view.customize.url.startsWith("https://") &&
+        !view.customize.url.startsWith("http://") &&
+        !view.customize.url.startsWith("file:///")
+      ) {
+        app.isPackaged
+          ? (view.customize.url = "https://" + view.customize.url)
+          : (view.customize.url = "http://" + view.customize.url);
+      }
+      return load(view.customize.url, view, bvOptions);
+    }
   };
 
   setBounds = (id: number, bounds: Rectangle) => {

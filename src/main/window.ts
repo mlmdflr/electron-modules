@@ -202,7 +202,11 @@ function load(
   win.on("blur", () => win.webContents.send("window-blur-focus", "blur"));
   win.on("focus", () => win.webContents.send("window-blur-focus", "focus"));
 
-  if (url.startsWith("https://") || url.startsWith("http://"))
+  if (
+    url.startsWith("https://") ||
+    url.startsWith("http://") ||
+    url.startsWith("file:///")
+  )
     win
       .loadURL(url, win.customize.loadOptions as LoadURLOptions)
       .catch(logError);
@@ -402,7 +406,8 @@ export class Window {
     if ("url" in win.customize) {
       if (
         !win.customize.url.startsWith("https://") &&
-        !win.customize.url.startsWith("http://")
+        !win.customize.url.startsWith("http://") &&
+        !win.customize.url.startsWith("file:///")
       ) {
         app.isPackaged
           ? (win.customize.url = "https://" + win.customize.url)
