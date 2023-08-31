@@ -1,5 +1,5 @@
 import type { Customize } from "../types";
-import { app, ipcMain, shell, nativeTheme } from "electron";
+import { app, ipcMain, shell, nativeTheme, BrowserWindow } from "electron";
 import { resolve } from "node:path";
 import { fileOn } from "./file";
 import { logError } from "./log.inside";
@@ -143,12 +143,15 @@ class App {
             );
     });
     // 获得焦点时发出
-    app.on("browser-window-focus", () =>
-      shortcutInstance.register({
-        name: "关闭刷新",
-        key: "CommandOrControl+R",
-        callback: () => {},
-      }),
+    app.on(
+      "browser-window-focus",
+      () =>
+        !BrowserWindow.getFocusedWindow()?.isDevToolsWindow &&
+        shortcutInstance.register({
+          name: "关闭刷新",
+          key: "CommandOrControl+R",
+          callback: () => {},
+        }),
     );
     // 失去焦点时发出
     app.on("browser-window-blur", () =>

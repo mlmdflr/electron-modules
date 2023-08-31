@@ -7,10 +7,11 @@ import type {
   AutoResizeOptions,
   BrowserViewConstructorOptions,
 } from "electron";
-import { windowInstance, windowOpenHandler } from "./window";
+import { windowInstance, windowOpenHandler, openDevTools } from "./window";
 import { logError } from "./log.inside";
-import type { Customize_View } from "../types";
+import type { Customize_View, Customize_View_Url } from "../types";
 import { Snowflake } from "../comm/utils.inside";
+import { default as urls } from "../comm/url.filter.inside";
 
 declare global {
   module Electron {
@@ -36,11 +37,7 @@ function load(
     else view.webContents.send(`load-url`, view.customize);
   });
   //页面加载
-  if (
-    url.startsWith("https://") ||
-    url.startsWith("http://") ||
-    url.startsWith("file:///")
-  )
+  if (urls.some((u) => url.startsWith(u)))
     view.webContents
       .loadURL(url, view.customize.loadOptions as LoadURLOptions)
       .catch(logError);
@@ -116,14 +113,14 @@ class View {
       webPreferences: opt,
     });
     // 调试打开 DevTools
-    !app.isPackaged && view.webContents.openDevTools({ mode: "detach" });
+    !app.isPackaged && openDevTools(view.webContents);
     if ("route" in view.customize)
       return load(windowInstance.defaultLoadUrl, view, bvOptions);
     else {
       if (
-        !view.customize.url.startsWith("https://") &&
-        !view.customize.url.startsWith("http://") &&
-        !view.customize.url.startsWith("file:///")
+        !urls.some((u) =>
+          (view.customize as Customize_View_Url).url.startsWith(u),
+        )
       ) {
         app.isPackaged
           ? (view.customize.url = "https://" + view.customize.url)

@@ -11,15 +11,18 @@ import type {
   WindowStatusOpt,
   Customize_Route,
   WindowAlwaysOnTopOpt,
+  Customize_Url,
 } from "../types";
 import { join } from "node:path";
 import { app, screen, ipcMain, BrowserWindow } from "electron";
 import { logError } from "./log.inside";
 import { Snowflake } from "../comm/utils.inside";
+import { default as urls } from "../comm/url.filter.inside";
 
 declare global {
   module Electron {
     interface BrowserWindow {
+      isDevToolsWindow: boolean;
       customize: Customize;
     }
 
@@ -27,6 +30,26 @@ declare global {
       customize?: Customize;
     }
   }
+}
+
+export function openDevTools(webContents: WebContents) {
+  let devtools = new BrowserWindow();
+  devtools.isDevToolsWindow = true;
+  devtools.setMenu(null);
+  devtools.webContents.on("did-finish-load", () =>
+    devtools.setTitle(webContents.getTitle()),
+  );
+  webContents.setDevToolsWebContents(devtools.webContents);
+  webContents.openDevTools({
+    mode: "detach",
+  });
+  webContents.on("destroyed", () => {
+    //?防止先关闭devtools窗体
+    devtools?.close();
+  });
+  devtools.on("closed", () => {
+    devtools = null!;
+  });
 }
 
 /**
@@ -202,11 +225,7 @@ function load(
   win.on("blur", () => win.webContents.send("window-blur-focus", "blur"));
   win.on("focus", () => win.webContents.send("window-blur-focus", "focus"));
 
-  if (
-    url.startsWith("https://") ||
-    url.startsWith("http://") ||
-    url.startsWith("file:///")
-  )
+  if (urls.some((u) => url.startsWith(u)))
     win
       .loadURL(url, win.customize.loadOptions as LoadURLOptions)
       .catch(logError);
@@ -399,15 +418,31 @@ export class Window {
             .then((key) =>
               windowInstance.#insertCSSMap.set(`v${bv.customize.id}`, key),
             );
+        //关闭时恢复主窗体
+        win.on("closed", () => {
+          let mapValue = windowInstance.#insertCSSMap.get(
+              `${pwin?.customize.id ?? "default"}`,
+            ),
+            vMapGet = (key: string) =>
+              windowInstance.#insertCSSMap.get(
+                key === "vundefined" ? "default" : key,
+              ) as string;
+          if (pwin && mapValue) {
+            pwin.webContents.removeInsertedCSS(mapValue);
+            for (const bv of pwin.getBrowserViews())
+              vMapGet(`v${bv.customize.id}`) &&
+                bv.webContents?.removeInsertedCSS(
+                  vMapGet(`v${bv.customize.id}`),
+                );
+          }
+        });
       }
     }
     // 调试打开 DevTools
-    !app.isPackaged && win.webContents.openDevTools({ mode: "detach" });
+    !app.isPackaged && openDevTools(win.webContents);
     if ("url" in win.customize) {
       if (
-        !win.customize.url.startsWith("https://") &&
-        !win.customize.url.startsWith("http://") &&
-        !win.customize.url.startsWith("file:///")
+        !urls.some((u) => (win.customize as Customize_Url).url.startsWith(u))
       ) {
         app.isPackaged
           ? (win.customize.url = "https://" + win.customize.url)
@@ -421,7 +456,7 @@ export class Window {
   /**
    * 窗口关闭、隐藏、显示等常用方法
    */
-  func = (type: WindowFuncOpt, id?: number, data?: any[]) => {
+  func = (type: WindowFuncOpt, id?: bigint | number, data?: any[]) => {
     if (id !== null && id !== undefined) {
       const win = this.get(id);
       if (!win) throw Error(`not found this window -> ${id}`);
@@ -567,25 +602,6 @@ export class Window {
       if (args !== undefined && args !== null) {
         win = this.get(args as number | bigint);
         if (!win) throw Error(`not found this window -> ${args}`);
-        //模态框关闭父窗体恢复
-        if (win.isModal() && win.customize.parentId) {
-          let parentWin = this.get(win.customize.parentId),
-            mapValue = windowInstance.#insertCSSMap.get(
-              `${parentWin?.customize.id ?? "default"}`,
-            ),
-            vMapGet = (key: string) =>
-              windowInstance.#insertCSSMap.get(
-                key === "vundefined" ? "default" : key,
-              ) as string;
-          if (parentWin && mapValue) {
-            parentWin.webContents.removeInsertedCSS(mapValue);
-            for (const bv of parentWin.getBrowserViews())
-              vMapGet(`v${bv.customize.id}`) &&
-                bv.webContents?.removeInsertedCSS(
-                  vMapGet(`v${bv.customize.id}`),
-                );
-          }
-        }
         win.close();
       }
     });
