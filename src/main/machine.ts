@@ -6,8 +6,8 @@ export const getMachineGuid = () => {
   return process.platform === "win32"
     ? getMachineGuidWin()
     : process.platform === "linux"
-    ? getMachineGuidLinux()
-    : process.platform === "darwin"
-    ? getMachineGuidDarwin()
-    : "none";
+      ? getMachineGuidLinux()
+      : process.platform === "darwin"
+        ? getMachineGuidDarwin()
+        : "none";
 };

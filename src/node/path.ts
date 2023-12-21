@@ -1,3 +1,24 @@
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
 import {
   StringPrototypeCharCodeAt,
   StringPrototypeSlice,
@@ -18,7 +39,6 @@ import {
   CHAR_BACKWARD_SLASH,
   CHAR_COLON,
   CHAR_QUESTION_MARK,
-  isWindows,
 } from "./internal.constants.inside";
 
 import { validateObject, validateString } from "./internal.validators.inside";
@@ -29,7 +49,7 @@ import type {
   PlatformPath,
 } from "../types/node";
 
-const platformIsWin32 = isWindows;
+const platformIsWin32 = process.platform === "win32";
 
 const isPathSeparator = (code: number) =>
   code === CHAR_FORWARD_SLASH || code === CHAR_BACKWARD_SLASH;
@@ -111,11 +131,15 @@ const normalizeString = (
   return res;
 };
 
+function formatExt(ext: string) {
+  return ext ? `${ext[0] === "." ? "" : "."}${ext}` : "";
+}
+
 const _format = (sep: string, pathObject: FormatInputPathObject) => {
   validateObject(pathObject, "pathObject");
   const dir = pathObject.dir || pathObject.root;
   const base =
-    pathObject.base || `${pathObject.name || ""}${pathObject.ext || ""}`;
+    pathObject.base || `${pathObject.name || ""}${formatExt(pathObject.ext!)}`;
   if (!dir) {
     return base;
   }
@@ -721,11 +745,11 @@ const win32: PlatformPath = {
   },
   /**
    * @param {string} path
-   * @param {string} [ext]
+   * @param {string} [suffix]
    * @returns {string}
    */
-  basename(path: string, ext: string): string {
-    if (ext !== undefined) validateString(ext, "ext");
+  basename(path: string, suffix: string): string {
+    if (suffix !== undefined) validateString(suffix, "ext");
     validateString(path, "path");
     let start = 0;
     let end = -1;
@@ -742,9 +766,13 @@ const win32: PlatformPath = {
       start = 2;
     }
 
-    if (ext !== undefined && ext.length > 0 && ext.length <= path.length) {
-      if (ext === path) return "";
-      let extIdx = ext.length - 1;
+    if (
+      suffix !== undefined &&
+      suffix.length > 0 &&
+      suffix.length <= path.length
+    ) {
+      if (suffix === path) return "";
+      let extIdx = suffix.length - 1;
       let firstNonSlashEnd = -1;
       for (let i = path.length - 1; i >= start; --i) {
         const code = StringPrototypeCharCodeAt(path, i);
@@ -764,7 +792,7 @@ const win32: PlatformPath = {
           }
           if (extIdx >= 0) {
             // Try to match the explicit extension
-            if (code === StringPrototypeCharCodeAt(ext, extIdx)) {
+            if (code === StringPrototypeCharCodeAt(suffix, extIdx)) {
               if (--extIdx === -1) {
                 // We matched the extension, so mark this as the end of our path
                 // component
@@ -1279,20 +1307,24 @@ const posix: PlatformPath = {
 
   /**
    * @param {string} path
-   * @param {string} [ext]
+   * @param {string} [suffix]
    * @returns {string}
    */
-  basename(path: string, ext: string): string {
-    if (ext !== undefined) validateString(ext, "ext");
+  basename(path: string, suffix: string): string {
+    if (suffix !== undefined) validateString(suffix, "ext");
     validateString(path, "path");
 
     let start = 0;
     let end = -1;
     let matchedSlash = true;
 
-    if (ext !== undefined && ext.length > 0 && ext.length <= path.length) {
-      if (ext === path) return "";
-      let extIdx = ext.length - 1;
+    if (
+      suffix !== undefined &&
+      suffix.length > 0 &&
+      suffix.length <= path.length
+    ) {
+      if (suffix === path) return "";
+      let extIdx = suffix.length - 1;
       let firstNonSlashEnd = -1;
       for (let i = path.length - 1; i >= 0; --i) {
         const code = StringPrototypeCharCodeAt(path, i);
@@ -1312,7 +1344,7 @@ const posix: PlatformPath = {
           }
           if (extIdx >= 0) {
             // Try to match the explicit extension
-            if (code === StringPrototypeCharCodeAt(ext, extIdx)) {
+            if (code === StringPrototypeCharCodeAt(suffix, extIdx)) {
               if (--extIdx === -1) {
                 // We matched the extension, so mark this as the end of our path
                 // component

@@ -17,7 +17,11 @@
 // SOFTWARE.
 import { URL } from "url";
 import { Stream, PassThrough, pipeline as pump, Transform } from "node:stream";
-import { net, session as ElectronSession } from "electron";
+import {
+  net,
+  session as ElectronSession,
+  ClientRequestConstructorOptions,
+} from "electron";
 import { WriteStream } from "node:fs";
 import { createHash } from "node:crypto";
 import type { Writable, TransformCallback } from "node:stream";
@@ -739,13 +743,13 @@ class ElectronRequestClient implements RequestClient {
       headers,
     } = this.options;
 
-    const options = {
+    const options: ClientRequestConstructorOptions = {
       method,
       url: `${requestURL}`,
       path: `${pathname}${search || ""}`,
       session: session || ElectronSession.defaultSession,
       useSessionCookies,
-      protocol,
+      protocol: protocol as "http:" | "https:",
       host,
       hostname,
       origin,
